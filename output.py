@@ -1,5 +1,5 @@
 class Output:
-    ROW_WIDTH = 50
+    ROW_WIDTH = 30
     OUTPUT_FILE = "result.txt"
 
     file = None
@@ -15,13 +15,32 @@ class Output:
     def outputText(self, text):
         self.write(text)
 
+
     def outputTermsWithFrequency(self, terms):
-        self.writeTableHeader("Term", "Frequency")
+        self.writeTableHeader("Rank", "Term", "Frequency")
+
+        rank = 1
+
+        for term, obj in sorted(terms.items(), key=lambda k: k[1].frequency, reverse=True):
+            self.writeTableRow(str(rank), term, str(obj.frequency))
+            rank += 1
+
+        self.writeTableDelimiter(3)
+
+
+    def outputTermsWithRanksInDocuments(self, terms):
+        self.outputText("Ranks of the terms")
+        self.outputText("------------------\n")
 
         for term, obj in terms.items():
-            self.writeTableRow(term, str(obj.frequency))
+            self.outputText("\n")
+            self.outputText("Term: " + term)
+            self.writeTableHeader("Document", "Rank")
 
-        self.writeTableDelimiter(2)
+            for hit in obj.hits:
+                self.writeTableRow(hit.document, str(hit.rank))
+
+            self.writeTableDelimiter(2)
 
 
     # Table Construction

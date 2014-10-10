@@ -24,3 +24,9 @@ python / python3
 ```
 
 Models > punkt > Download
+
+### Execute
+
+```bash
+python / python3 main.py
+```

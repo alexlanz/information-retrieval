@@ -44,5 +44,7 @@ output.outputText("Number of terms: " + str(numberOfTerms))
 output.outputText("Number of unique terms: " + str(len(terms)))
 output.outputText("\n")
 output.outputTermsWithFrequency(terms)
+output.outputText("\n")
+output.outputTermsWithRanksInDocuments(terms)
 
 print("Results are written to 'results.txt'.")
