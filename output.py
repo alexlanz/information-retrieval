@@ -19,28 +19,17 @@ class Output:
     def outputTermsWithFrequency(self, terms):
         self.writeTableHeader("Rank", "Term", "Frequency")
 
-        rank = 1
+        rank = 0
 
-        for term, obj in sorted(terms.items(), key=lambda k: k[1].frequency, reverse=True):
-            self.writeTableRow(str(rank), term, str(obj.frequency))
+        for term, frequency in terms:
             rank += 1
+            self.writeTableRow(str(rank), term, str(frequency))
 
         self.writeTableDelimiter(3)
 
 
-    def outputTermsWithRanksInDocuments(self, terms):
-        self.outputText("Ranks of the terms")
-        self.outputText("------------------\n")
-
-        for term, obj in terms.items():
-            self.outputText("\n")
-            self.outputText("Term: " + term)
-            self.writeTableHeader("Document", "Rank")
-
-            for hit in obj.hits:
-                self.writeTableRow(hit.document, str(hit.rank))
-
-            self.writeTableDelimiter(2)
+    def outputNewLine(self):
+        self.outputText("")
 
 
     # Table Construction

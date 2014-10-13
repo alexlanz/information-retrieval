@@ -1,24 +1,25 @@
-class Term:
-    
-    name = ""
-    frequency = 0
-    hits = []
+import nltk
 
-    def __init__(self, name):
-        self.name = name
-        self.hits = []
+class Index:
+
+    terms = []
 
 
-    def addHit(self, document, rank):
-        hit = Hit(document, rank)
-        self.hits.append(hit)
+    def parseTokensFromText(self, text):
+        tokenList = nltk.word_tokenize(text)
+        modifiedTokenList = [token.lower() for token in tokenList if token.isalpha()]
+        self.terms.extend(modifiedTokenList)
+        return modifiedTokenList
 
 
-class Hit:
-    
-    document = ""
-    rank = None
+    def getNumberOfTerms(self):
+        return len(self.terms)
 
-    def __init__(self, document, rank):
-        self.document = document
-        self.rank = rank
+
+    def getNumberOfUniqueTerms(self):
+        return len(set(self.terms))
+
+
+    def getMostFrequentTerms(self, numberOfTerms):
+        mostFrequentTerms = nltk.FreqDist(self.terms)
+        return mostFrequentTerms.most_common(numberOfTerms)

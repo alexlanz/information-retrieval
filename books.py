@@ -1,12 +1,13 @@
 from os import walk
 
-class Storage:
+class BookStorage:
 
     directory = ""
 
     def __init__(self, directory):
         self.directory = directory
     
+
     def getBooks(self):
         books = []
 
@@ -22,3 +23,11 @@ class Storage:
             books[index] = path + books[index]
 
         return books
+
+
+    def getBookText(self, filename):
+        fp = open(filename, 'rU')
+        text = fp.read()
+        fp.close()
+        
+        return text
