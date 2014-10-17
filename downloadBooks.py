@@ -270,7 +270,7 @@ for book in books:
     response = request.urlopen("http://www.gutenberg.org/cache/epub/" + str(book) + "/pg" + str(book) + ".txt")
     text = response.read().decode("UTF-8")
 
-    file = open("books/" + str(book) + ".txt", "w")
+    file = open("documents/" + str(book) + ".txt", "w")
     file.write(text);
     file.close()
 
