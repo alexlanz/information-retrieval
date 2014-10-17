@@ -1,17 +1,21 @@
-from document import Document
 from os import walk
 
-class Book(Document):
+class Document:
+
+    path = ""
 
     def __init__(self, path):
-        Document.__init__(self, path)
+        self.path = path
+
+    def getPath(self):
+        return self.path
 
 
-class BookShelf:
+class DocBase:
 
     directory = ""
     files = []
-    books = []
+    documents = []
 
     def __init__(self, directory):
         if not directory.endswith('/'):
@@ -20,19 +24,19 @@ class BookShelf:
         self.directory = directory
     
 
-    def loadBooks(self):
+    def loadDocuments(self):
         for (dirpath, dirnames, filenames) in walk(self.directory):
             self.files.extend(filenames)
 
         for index in range(len(self.files)):
-            book = Book(self.directory + self.files[index])
-            self.books.append(book)
+            document = Document(self.directory + self.files[index])
+            self.documents.append(document)
 
-        return self.books
+        return self.documents
 
 
-    def getBookText(self, book):
-        fp = open(book.getPath(), 'rU')
+    def getDocumentText(self, document):
+        fp = open(document.getPath(), 'rU')
         text = fp.read()
         fp.close()
         

@@ -2,21 +2,29 @@ class Posting:
 
     document = None
     count = 0
+    positions = []
 
     def __init__(self, document):
         self.document = document
-        self.count = 1
+        self.count = 0
+        self.positions = []
+
 
     def getDocument(self):
         return self.document
 
 
-    def incrementCount(self):
+    def addOccurrence(self, position):
         self.count += 1
+        self.positions.append(position)
 
 
     def getCount(self):
         return self.count
+
+
+    def getPositions(self):
+        return self.positions
 
 
 class PostingsList:
@@ -27,28 +35,29 @@ class PostingsList:
         self.postings = []
 
 
-    def addPosting(self, document):
+    def addPosting(self, document, position):
         length = len(self.postings)
 
         if length == 0:
-            self.addNewPosting(document)
+            self.addNewPosting(document, position)
             return
 
         posting = self.postings[length - 1]
         postingDocument = posting.getDocument()
 
         if postingDocument.getPath() == document.getPath():
-            posting.incrementCount()
+            posting.addOccurrence(position)
         else:
-            self.addNewPosting(document)
+            self.addNewPosting(document, position)
 
 
     def getPostings(self):
         return self.postings
 
 
-    def addNewPosting(self, document):
+    def addNewPosting(self, document, position):
         posting = Posting(document)
+        posting.addOccurrence(position)
         self.postings.append(posting)
 
 
