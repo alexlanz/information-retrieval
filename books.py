@@ -1,32 +1,38 @@
+from document import Document
 from os import walk
 
-class BookStorage:
+class Book(Document):
+
+    def __init__(self, path):
+        Document.__init__(self, path)
+
+
+class BookShelf:
 
     directory = ""
+    files = []
+    books = []
 
     def __init__(self, directory):
+        if not directory.endswith('/'):
+            directory += "/"
+
         self.directory = directory
     
 
-    def getBooks(self):
-        books = []
-
+    def loadBooks(self):
         for (dirpath, dirnames, filenames) in walk(self.directory):
-            books.extend(filenames)
+            self.files.extend(filenames)
 
-        path = self.directory
+        for index in range(len(self.files)):
+            book = Book(self.directory + self.files[index])
+            self.books.append(book)
 
-        if not path.endswith('/'):
-            path += "/"
-
-        for index in range(len(books)):
-            books[index] = path + books[index]
-
-        return books
+        return self.books
 
 
-    def getBookText(self, filename):
-        fp = open(filename, 'rU')
+    def getBookText(self, book):
+        fp = open(book.getPath(), 'rU')
         text = fp.read()
         fp.close()
         

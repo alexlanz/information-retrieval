@@ -1,29 +1,26 @@
-from books import BookStorage
-from index import Index
+from books import BookShelf
+from index import Dictionary
+from parser import Parser
 from output import Output
 
 # Books
-storage = BookStorage("books")
-books = storage.getBooks()
+bookShelf = BookShelf("books")
+books = bookShelf.loadBooks()
 
 # Index
-index = Index()
+dictionary = Dictionary()
+parser = Parser()
 
 for book in books:
-    text = storage.getBookText(book)
-    tokensInTheBook = index.parseTokensFromText(text)
+    text = bookShelf.getBookText(book)
+    tokensInTheBook = parser.parseTokensFromText(text)
 
-# Variables for output
-numberOfTerms = index.getNumberOfTerms()
-numberOfUniqueTerms = index.getNumberOfUniqueTerms()
-mostFrequentTerms = index.getMostFrequentTerms(50)
+    for token in tokensInTheBook:
+        postingList = dictionary.getPostingsList(token)
+        postingList.addPosting(book)
+
+    break
 
 # Output
-output = Output()
-output.outputText("Number of terms: " + str(numberOfTerms))
-output.outputText("Number of unique terms: " + str(numberOfUniqueTerms))
-output.outputNewLine()
-output.outputText("50 most frequent terms:")
-output.outputTermsWithFrequency(mostFrequentTerms)
-
-print("Results are written to 'results.txt'.")
+for term, postingList in dictionary.getTerms().items():
+    print("Term: " + term + " PostingList: " + str(postingList.getPostings()[0].getCount()))
