@@ -11,7 +11,7 @@ class Document:
         return self.path
 
 
-class DocBase:
+class DocumentCoordinator:
 
     directory = ""
     files = []
@@ -36,7 +36,7 @@ class DocBase:
 
 
     def getDocumentText(self, document):
-        fp = open(document.getPath(), 'rU')
+        fp = open(document.getPath(), 'r', encoding='utf-8')
         text = fp.read()
         fp.close()
         
