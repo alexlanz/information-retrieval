@@ -11,7 +11,7 @@ class Document:
         return self.path
 
 
-class DocumentCoordinator:
+class DocumentManager:
 
     directory = ""
     files = []

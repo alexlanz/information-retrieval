@@ -1,7 +1,8 @@
-from index import IndexSource
 from index import Index
-from utils import Timer
-from output import Output
+from index import IndexSource
+from parser import Parser
+from parser import ParserType
+from query import QueryExecutor
 
 # Index source
 print("Do you want to create a new index or load an stored index?")
@@ -21,16 +22,18 @@ while True:
     print("Invalid option '" + indexOption + "', please choose again.")
 
 
+# Parser
+parser = Parser(ParserType.wordprocessing)
+
 # Index
-index = Index(indexSource)
-
-timerForIndexCreation = index.getTimer()
-print("Time for creating the index: " + timerForIndexCreation.getElapsedMillisecondsString() + "\n")
-
+index = Index(indexSource, parser)
+print("Time for creating the index: " + index.getTimer().getElapsedMillisecondsString() + "\n")
 
 # Query
 print("Query execution:")
 print("You can leave the program by entering 'exit'.\n")
+
+queryExecutor = QueryExecutor(index)
 
 while True:
     query = input("Query: ")
@@ -38,13 +41,19 @@ while True:
     if query == "exit":
         break
 
-    timer = Timer()
-    timer.start()
+    # Query execution
+    parsedQuery = parser.parseQuery(query)
+    result = queryExecutor.executeQuery(parsedQuery)
 
-    # Execution of the query
+    print("Number\tRank\tDocument")
 
-    timer.stop()
-    print("Execution time: " + timer.getElapsedMillisecondsString() + "\n")
+    position = 1
+    for item in result:
+        print("" + str(position) + "\t" + "{0:.3f}".format(item.getRank()) + "\t" + item.getDocument().getPath())
+        position += 1
+
+    print("Execution time: " + queryExecutor.getTimer().getElapsedMillisecondsString())
+    print("Number of results: " + str(len(result)) + "\n")
 
 print("Exiting form query execution ...\n")
 
