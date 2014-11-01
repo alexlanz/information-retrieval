@@ -1,5 +1,6 @@
 storage
 __pycache__
 *.pyc
+.vagrant
 .idea
 .DS_STORE

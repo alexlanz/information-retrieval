@@ -23,7 +23,7 @@ while True:
 
 
 # Parser
-parser = Parser(ParserType.wordprocessing)
+parser = Parser(ParserType.simple)
 
 # Index
 index = Index(indexSource, parser)
