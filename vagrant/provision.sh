@@ -15,5 +15,5 @@ sudo pip3 install -U nltk
 
 # Download nltk packages
 python3 -m nltk.downloader stopwords
-python3 -m nltk.downloader punkt
 python3 -m nltk.downloader wordnet
+python3 -m nltk.downloader punkt

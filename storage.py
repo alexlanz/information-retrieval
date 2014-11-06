@@ -6,22 +6,31 @@ class Storage:
     STORAGE_DIRECTORY = "storage/"
 
 
-    def saveIndex(self, dictionary):
-        if not os.path.isdir(self.STORAGE_DIRECTORY):
-            os.mkdir(self.STORAGE_DIRECTORY)
+    def saveDictionary(self, dictionary):
+        self.checkDirectory()
 
-        fileName = self.getIndexFileName()
+        dictionaryFileName = self.getDictionaryFileName()
         
-        file = open(fileName, "wb+")
+        file = open(dictionaryFileName, "wb+")
         pickle.dump(dictionary, file)
         file.close()
 
 
-    def loadIndex(self):
-        fileName = self.getIndexFileName()
+    def saveNGrams(self, ngrams):
+        self.checkDirectory()
+
+        ngramsFileName = self.getNGramsFileName()
+
+        file = open(ngramsFileName, "wb+")
+        pickle.dump(ngrams, file)
+        file.close()
+
+
+    def loadDictionary(self):
+        fileName = self.getDictionaryFileName()
 
         if not os.path.exists(fileName):
-            raise ValueError("No index is stored")
+            raise ValueError("No dictionary is stored")
 
         file = open(fileName, "rb")
         dictionary = pickle.load(file)
@@ -30,5 +39,26 @@ class Storage:
         return dictionary
 
 
-    def getIndexFileName(self):
-        return self.STORAGE_DIRECTORY + "index"
+    def loadNGrams(self):
+        fileName = self.getNGramsFileName()
+
+        if not os.path.exists(fileName):
+            raise ValueError("No ngrams are stored")
+
+        file = open(fileName, "rb")
+        dictionary = pickle.load(file)
+        file.close()
+
+        return dictionary
+
+
+    def checkDirectory(self):
+        if not os.path.isdir(self.STORAGE_DIRECTORY):
+            os.mkdir(self.STORAGE_DIRECTORY)
+
+    def getDictionaryFileName(self):
+        return self.STORAGE_DIRECTORY + "dictionary"
+
+
+    def getNGramsFileName(self):
+        return self.STORAGE_DIRECTORY + "ngrams"

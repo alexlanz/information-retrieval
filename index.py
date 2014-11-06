@@ -1,4 +1,5 @@
 from enum import Enum
+from nltk.util import ngrams
 from utils import Timer
 from parser import Parser
 from documents import DocumentManager
@@ -16,12 +17,14 @@ class Index:
     parser = None
     timer = None
     dictionary = None
+    ngrams = None
     parserType = None
 
     def __init__(self, source, parser):
         self.source = source
         self.parser = parser
         self.dictionary = Dictionary()
+        self.ngrams = {}
 
         self.timer = Timer()
         self.timer.start()
@@ -49,14 +52,27 @@ class Index:
             tokens = self.parser.parseTokensFromText(text)
 
             for position, token in enumerate(tokens):
-                postingList = self.dictionary.getPostingsList(token)
+                if not self.dictionary.existsPostingsList(token):
+                    postingList = self.dictionary.createPostingsList(token)
+
+                    bigrams = ngrams(token, 2, pad_left=True, pad_right=True, pad_symbol='$')
+                    bigramsList = list(bigrams)
+
+                    for i in range(0, len(bigramsList)):
+                        bigram = ''.join(bigramsList[i])
+                        self.ngrams[bigram] = NGramWord(token, i)
+
+                else:
+                    postingList = self.dictionary.getPostingsList(token)
+
                 postingList.addPosting(document, position)
 
 
 
     def loadStoredIndex(self):
         storage = Storage()
-        self.dictionary = storage.loadIndex()
+        self.dictionary = storage.loadDictionary()
+        self.ngrams = storage.loadNGrams()
 
 
     def storeIndex(self):
@@ -64,7 +80,8 @@ class Index:
         self.timer.start()
 
         storage = Storage()
-        storage.saveIndex(self.dictionary)
+        storage.saveDictionary(self.dictionary)
+        storage.saveNGrams(self.ngrams)
 
         self.timer.stop()
 
@@ -159,11 +176,29 @@ class Dictionary:
     def getTerms(self):
         return self.terms
 
+    def existsPostingsList(self, term):
+        return (term in self.terms)
 
-    def getPostingsList(self, term):
-        if term in self.terms:
-            return self.terms[term]
-
+    def createPostingsList(self, term):
         postingList = PostingsList()
         self.terms[term] = postingList
         return postingList
+
+    def getPostingsList(self, term):
+        return self.terms[term]
+
+
+class NGramWord:
+
+    term = None
+    position = None
+
+    def __init__(self, term, position):
+        self.term = term
+        self.position = position
+
+    def getTerm(self):
+        return self.term
+
+    def getPosition(self):
+        return self.position
