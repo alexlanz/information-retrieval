@@ -63,9 +63,10 @@ class Index:
         for document in documents:
             counter += 1
             print("\n\n Document: " + document.getPath() + "\n")
-            for term in self.getDictionary().getSortedTerms():
+            print(vectorProvider.createVectorForDocument(document, 5))
+            '''for term in self.getDictionary().getSortedTerms():
                 print(term + "\t tf: " + "{0:.3f}\t".format(vectorProvider.calculateWeightedTermFrequency(term, document)) + " idf: " + "{0:.3f} \t".format(vectorProvider.calculateWeightedIdf(term, 5)) + " w: {0:.3f}".format(vectorProvider.calcualateTfIdfWeighting(term, document, 5)))
-
+            '''
             if counter == 5:
                 break
 

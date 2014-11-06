@@ -27,8 +27,23 @@ class VectorProvider:
         self.index = index
 
 
-    def createVectorForDocument(self, document):
-        return []
+    def createVectorForDocument(self, document, totalDocuments):
+        vector = []
+        for term in self.sortedTerms:
+            vector.append(self.calcualateTfIdfWeighting(term, document, totalDocuments))
+
+        return vector
+
+
+    def createVectorForQuery(self, terms):
+        vector = []
+        for term in self.sortedTerms:
+            if term in terms:
+                vector.append(1)
+            else:
+                vector.append(0)
+
+        return vector
 
 
     def calculateWeightedTermFrequency(self, term, document):
@@ -52,3 +67,4 @@ class VectorProvider:
 
     def calcualateTfIdfWeighting(self, term, document, totalDocs):
         return self.calculateWeightedTermFrequency(term, document) * self.calculateWeightedIdf(term, totalDocs)
+
