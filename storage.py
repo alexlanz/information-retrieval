@@ -6,55 +6,45 @@ class Storage:
     STORAGE_DIRECTORY = "storage/"
 
 
-    def saveDictionary(self, dictionary):
-        self.checkDirectory()
-
-        dictionaryFileName = self.getDictionaryFileName()
-        
-        file = open(dictionaryFileName, "wb+")
-        pickle.dump(dictionary, file)
-        file.close()
+    def storeDictionary(self, dictionary):
+        fileName = self.getDictionaryFileName()
+        self.store(fileName, dictionary)
 
 
-    def saveNGrams(self, ngrams):
-        self.checkDirectory()
+    def storeNGrams(self, ngrams):
+        fileName = self.getNGramsFileName()
+        self.store(fileName, ngrams)
 
-        ngramsFileName = self.getNGramsFileName()
 
-        file = open(ngramsFileName, "wb+")
-        pickle.dump(ngrams, file)
+    def store(self, fileName, object):
+        if not os.path.isdir(self.STORAGE_DIRECTORY):
+            os.mkdir(self.STORAGE_DIRECTORY)
+
+        file = open(fileName, "wb+")
+        pickle.dump(object, file)
         file.close()
 
 
     def loadDictionary(self):
         fileName = self.getDictionaryFileName()
-
-        if not os.path.exists(fileName):
-            raise ValueError("No dictionary is stored")
-
-        file = open(fileName, "rb")
-        dictionary = pickle.load(file)
-        file.close()
-
-        return dictionary
+        return self.load(fileName)
 
 
     def loadNGrams(self):
         fileName = self.getNGramsFileName()
+        return self.load(fileName)
 
+
+    def load(self, fileName):
         if not os.path.exists(fileName):
-            raise ValueError("No ngrams are stored")
+            raise ValueError("File " + fileName + " does not exist.")
 
         file = open(fileName, "rb")
-        dictionary = pickle.load(file)
+        object = pickle.load(file)
         file.close()
 
-        return dictionary
+        return object
 
-
-    def checkDirectory(self):
-        if not os.path.isdir(self.STORAGE_DIRECTORY):
-            os.mkdir(self.STORAGE_DIRECTORY)
 
     def getDictionaryFileName(self):
         return self.STORAGE_DIRECTORY + "dictionary"

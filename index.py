@@ -80,8 +80,8 @@ class Index:
         self.timer.start()
 
         storage = Storage()
-        storage.saveDictionary(self.dictionary)
-        storage.saveNGrams(self.ngrams)
+        storage.storeDictionary(self.dictionary)
+        storage.storeNGrams(self.ngrams)
 
         self.timer.stop()
 
