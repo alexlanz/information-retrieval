@@ -3,6 +3,7 @@ from utils import Timer
 from parser import Parser
 from documents import DocumentManager
 from storage import Storage
+from vectorspace import VectorProvider
 
 
 class IndexSource(Enum):
@@ -43,15 +44,30 @@ class Index:
     def createNewIndex(self):
         docCoordinator = DocumentManager("documents")
         documents = docCoordinator.loadDocuments()
-
+        counter = 0
         for document in documents:
             text = docCoordinator.getDocumentText(document)
             tokens = self.parser.parseTokensFromText(text)
-
+            counter += 1
             for position, token in enumerate(tokens):
                 postingList = self.dictionary.getPostingsList(token)
                 postingList.addPosting(document, position)
 
+            if counter == 5:
+                break
+
+
+        #VectorSpace
+        vectorProvider = VectorProvider(self.getDictionary().getSortedTerms(), self)
+        counter = 0
+        for document in documents:
+            counter += 1
+            print("\n\n Document: " + document.getPath() + "\n")
+            for term in self.getDictionary().getSortedTerms():
+                print(term + "\t tf: " + "{0:.3f}\t".format(vectorProvider.calculateWeightedTermFrequency(term, document)) + " idf: " + "{0:.3f} \t".format(vectorProvider.calculateWeightedIdf(term, 5)) + " w: {0:.3f}".format(vectorProvider.calcualateTfIdfWeighting(term, document, 5)))
+
+            if counter == 5:
+                break
 
 
     def loadStoredIndex(self):
@@ -167,3 +183,7 @@ class Dictionary:
         postingList = PostingsList()
         self.terms[term] = postingList
         return postingList
+
+
+    def getSortedTerms(self):
+        return sorted(self.terms.keys())
