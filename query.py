@@ -17,7 +17,7 @@ class QueryExecutor:
         self.timer.start()
 
         matchedResultsList = []
-        numberOfSearchedTokens = 0
+        searchtokens = []
 
         for query in queryList:
             searchedTokens = query.getSearchTokens()
@@ -25,7 +25,7 @@ class QueryExecutor:
 
             searchedResult = QueryResult()
             for token in searchedTokens:
-                numberOfSearchedTokens += 1
+                searchtokens.append(token)
                 postingsList = self.index.getDictionary().getPostingsList(token)
                 searchedResult.addPostingList(token, postingsList)
 
@@ -42,10 +42,12 @@ class QueryExecutor:
             matchedResultsList.append(matchedResults)
 
         matchedResults = QueryResult.mergeWithIntersection(matchedResultsList)
+        queryVector = self.index.getVectorProvider().createVectorForQuery(searchtokens)
+        print(queryVector)
 
         rankedResult = RankedResult()
         for document, queryResultItem in matchedResults.getItems().items():
-            rank = RankUtils.calculateRank(queryResultItem, numberOfSearchedTokens)
+            rank = RankUtils.calculateVectorSpaceRank(queryVector, self.index.getVectorSpace().getDocumentVector(document))
             rankedResultItem = RankedResultItem(document, rank, queryResultItem)
             rankedResult.addRankedResultItem(rankedResultItem)
 
