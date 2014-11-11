@@ -1,3 +1,5 @@
+from scipy import spatial
+
 class RankedResult:
 
     rankedResult = None
@@ -39,3 +41,8 @@ class RankUtils:
     @staticmethod
     def calculateRank(queryResultItem, numberOfQueryTerms):
         return len(queryResultItem.getMatches()) / numberOfQueryTerms
+
+    @staticmethod
+    def calculateVectorSpaceRank(queryVector, documentVector):
+        return 1 - spatial.distance.cosine(queryVector, documentVector)
+

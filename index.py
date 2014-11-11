@@ -3,6 +3,8 @@ from utils import Timer
 from parser import NGramParser
 from documents import DocumentManager
 from storage import Storage
+from vectorspace import VectorProvider
+from vectorspace import VectorSpace
 
 
 class IndexSource(Enum):
@@ -17,12 +19,18 @@ class Index:
     timer = None
     dictionary = None
     ngrams = None
+    vectorSpace = None
+    vectorProvider = None
+    indexedDocuments = 0
 
     def __init__(self, source, indexParser):
         self.source = source
         self.parser = indexParser
         self.dictionary = Dictionary()
         self.ngrams = NGrams()
+        self.vectorSpace = VectorSpace()
+        self.vectorProvider = None
+        self.indexedDocuments = 0
 
         self.timer = Timer()
         self.timer.start()
@@ -67,6 +75,15 @@ class Index:
 
                 postingList.addPosting(document, position)
 
+        #VectorSpace
+        self.vectorProvider = VectorProvider(self.getDictionary().getSortedTerms(), self)
+
+        for document in documents:
+            vector = self.vectorProvider.createVectorForDocument(document, len(documents))
+            self.vectorSpace.addDocumentVector(document, vector)
+
+        self.indexedDocuments = len(documents)
+
 
 
     def loadStoredIndex(self):
@@ -98,6 +115,18 @@ class Index:
 
     def getParserType(self):
         return self.parserType
+
+
+    def getVectorSpace(self):
+        return self.vectorSpace
+
+
+    def getVectorProvider(self):
+        return self.vectorProvider
+
+
+    def getNumberOfIndexDocuments(self):
+        return self.indexedDocuments
 
 
 class Posting:
@@ -188,6 +217,9 @@ class Dictionary:
 
     def getPostingsList(self, term):
         return self.terms[term]
+
+    def getSortedTerms(self):
+        return sorted(self.terms.keys())
 
 
 class NGramPart:
