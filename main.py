@@ -68,11 +68,14 @@ while True:
     print("Parse time: " + queryParser.getTimer().getElapsedMillisecondsString())
     print("Execution time: " + queryExecutor.getTimer().getElapsedMillisecondsString())
     print("Number of results: " + str(len(result)) + "\n")
+
     recallList = statistics.getRecallAtk(result)
     precisionList = statistics.getPrecisionAtk(result)
+
     statistics.printRecall(recallList)
     statistics.printPrecision(precisionList)
     #statistics.plotRecallPrecision(recallList, precisionList)
+    print("")
 
 print("Exiting form query execution ...\n")
 

@@ -20,7 +20,6 @@ class Statistic:
         return relevant
 
     def getPrecisionAtk(self, queryResult):
-        #relevantInstances = QuerySet.getRelevantInstances(queryIndex) #file-namensliste
         if len(queryResult) == 0:
             return (0, 0)
 
@@ -30,7 +29,7 @@ class Statistic:
             for item in queryResult[:k]:
                 if item.getRank() >= self.relevantThreshold:
                     relevant += 1
-            precisionAtK.append((k,(relevant / k)))
+            precisionAtK.append((k, (relevant / k)))
         return precisionAtK
 
 

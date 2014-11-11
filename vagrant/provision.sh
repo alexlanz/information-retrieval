@@ -4,12 +4,15 @@
 sudo apt-get update
 sudo apt-get upgrade -y
 
+# Install python module requirements
+sudo apt-get install -y python3-numpy python3-scipy
+
 # Install pip
 sudo apt-get install -y python3-pip
 
 # Install pip packages
-sudo pip3 install -U numpy
-sudo pip3 install -U scipy
+#sudo pip3 install -U numpy
+#sudo pip3 install -U scipy
 sudo pip3 install -U scikit-learn
 sudo pip3 install -U nltk
 sudo pip3 install -U elasticsearch
