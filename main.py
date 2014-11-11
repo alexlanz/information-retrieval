@@ -29,17 +29,17 @@ while True:
     parsedQuery = queryParser.parse(query)
 
     for query in parsedQuery:
-        print('Search Tokens')
+        print('\nSearch Tokens:')
         for token in query.getSearchTokens():
-            print(token)
+            print(" - " + token)
 
-        print('Excluded Tokens')
+        print('\nExcluded Tokens:')
         for token in query.getExcludedTokens():
-            print(token)
+            print(" - " + token)
 
     result = queryExecutor.executeQuery(parsedQuery)
 
-    print("Rank\tSimilarity\tDocument")
+    print("\nRank\tSimilarity\tDocument")
 
     position = 1
     for item in result:

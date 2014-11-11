@@ -3,33 +3,111 @@ from utils import Timer
 
 es = Elasticsearch()
 
-# Start timer
-timer = Timer()
-timer.start()
+queries = []
 
-# Query
-#result = es.search(index="document-index", body={"query": {"match_all": {}}})
-result = es.search(
-    index='document-index',
-    doc_type='book',
-    body={
-      'query': {
+queries.append({
+    'query': {
         'filtered': {
-          'query': {
-            'match': {'text': 'fix'}
-          }
+            'query': {
+                'match': {'text': 'yogi'}
+            }
         }
-      }
     }
-)
+})
 
-print("Got %d Hits:" % result['hits']['total'])
+queries.append({
+    'query': {
+        'bool': {
+            'must': [
+                { 'term': { 'text': 'yogi' } },
+                { 'term': { 'text': 'atkinson' } }
+            ]
+        }
+    }
+})
 
-for hit in result['hits']['hits']:
-    print(hit["_source"]["name"])
-    #text = hit["_source"]["text"]
-    #print(text.encode('utf-8'))
+queries.append({
+    'query': {
+        'bool': {
+            'must': [
+                {
+                    'bool': {
+                        'should': [
+                            { 'term': { 'text': 'yogi' } },
+                            { 'term': { 'text': 'atkinson' } },
+                            { 'term': { 'text': 'gutenberg' } }
+                        ]
+                    }
+                },
+                {
+                    'bool': {
+                        'must': [
+                            { 'term': { 'text': 'status' } }
+                        ],
+                        'must_not': [
+                            { 'term': { 'text': 'code' } }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+})
 
-# Stop timer
-timer.stop()
-print("Search time: " + timer.getElapsedMillisecondsString())
+queries.append({
+    'query': {
+        'wildcard': {
+            'text': {
+                'value': 'in*ma*on'
+            }
+        }
+    }
+})
+
+
+queries.append({
+    'query': {
+        'wildcard': {
+            'text': {
+                'value': 'hel*'
+            }
+        }
+    }
+})
+
+queries.append({
+    'query': {
+        'wildcard': {
+            'text': {
+                'value': '*ogi'
+            }
+        }
+    }
+})
+
+
+
+for query in queries:
+
+    # Start timer
+    timer = Timer()
+    timer.start()
+
+    # Query
+    #result = es.search(index="document-index", body={"query": {"match_all": {}}})
+    result = es.search(
+        index='document-index',
+        doc_type='book',
+        body=query
+    )
+
+    print("Got %d Hits:" % result['hits']['total'])
+
+    for hit in result['hits']['hits']:
+        print(hit["_source"]["name"])
+        #text = hit["_source"]["text"]
+        #print(text.encode('utf-8'))
+
+    # Stop timer
+    timer.stop()
+    print("Search time: " + timer.getElapsedMillisecondsString())
