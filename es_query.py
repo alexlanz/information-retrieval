@@ -101,13 +101,14 @@ for query in queries:
         body=query
     )
 
+    # Stop timer
+    timer.stop()
+
+    # Result
+    print("\nSearch time: " + timer.getElapsedMillisecondsString())
     print("Got %d Hits:" % result['hits']['total'])
 
     for hit in result['hits']['hits']:
         print(hit["_source"]["name"])
         #text = hit["_source"]["text"]
         #print(text.encode('utf-8'))
-
-    # Stop timer
-    timer.stop()
-    print("Search time: " + timer.getElapsedMillisecondsString())
