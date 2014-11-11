@@ -1,5 +1,3 @@
-#import matplotlib.pyplot as plot
-
 class Statistic:
 
     k = []
@@ -58,19 +56,6 @@ class Statistic:
     def printPrecision(self, precisionList):
         for item in precisionList:
             print("Precision at k: " + str(item[0]) + "\t value: " + str(item[1]))
-
-
-    '''def plotRecallPrecision(self, recallList, precisionList):
-        plot.plot([r[0] for r in recallList], [r[1] for r in recallList], "bs-")
-        plot.ylabel("recall")
-        plot.xlabel("top-k recommendations")
-
-        plot.figure()
-        plot.ylabel("precision")
-        plot.xlabel("top-k recommendations")
-        plot.plot([p[0] for p in precisionList], [p[1] for p in precisionList], 'rs-')
-
-        plot.show()'''
 
 
 

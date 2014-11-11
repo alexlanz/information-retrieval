@@ -216,7 +216,10 @@ class Dictionary:
         return postingList
 
     def getPostingsList(self, term):
-        return self.terms[term]
+        if term in self.terms.keys():
+            return self.terms[term]
+        else:
+            return PostingsList()
 
     def getSortedTerms(self):
         return sorted(self.terms.keys())

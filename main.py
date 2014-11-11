@@ -47,14 +47,14 @@ while True:
     # Query execution
     parsedQuery = queryParser.parse(query)
 
-    '''for query in parsedQuery:
+    for query in parsedQuery:
         print('Search Tokens')
         for token in query.getSearchTokens():
             print(token)
 
         print('Excluded Tokens')
         for token in query.getExcludedTokens():
-            print(token)'''
+            print(token)
 
     result = queryExecutor.executeQuery(parsedQuery)
 
@@ -69,12 +69,12 @@ while True:
     print("Execution time: " + queryExecutor.getTimer().getElapsedMillisecondsString())
     print("Number of results: " + str(len(result)) + "\n")
 
-    recallList = statistics.getRecallAtk(result)
-    precisionList = statistics.getPrecisionAtk(result)
+    if(len(result) > 0):
+        recallList = statistics.getRecallAtk(result)
+        precisionList = statistics.getPrecisionAtk(result)
 
-    statistics.printRecall(recallList)
-    statistics.printPrecision(precisionList)
-    #statistics.plotRecallPrecision(recallList, precisionList)
+        statistics.printRecall(recallList)
+        statistics.printPrecision(precisionList)
     print("")
 
 print("Exiting form query execution ...\n")

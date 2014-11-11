@@ -2,6 +2,7 @@ import nltk
 from nltk.util import ngrams
 from utils import Timer
 from query import Query
+from nltk.corpus import wordnet as wn
 
 class IndexParser:
 
@@ -44,6 +45,7 @@ class QueryParser:
                     searchedTokens.extend(wildcardTokens)
                 else:
                     searchedTokens.append(token)
+                    searchedTokens.extend(self.getSynonymsForToken(token))
 
             parsedQueries.append(Query(searchedTokens, excludedTokens))
 
@@ -148,6 +150,15 @@ class QueryParser:
 
 
         return results
+
+
+    def getSynonymsForToken(self, token):
+        synonymes = []
+        synset = wn.synsets(token)
+        if synset: #emptyness check
+            return synset[0].lemma_names()
+        return []
+
 
 class NGramParser:
 
