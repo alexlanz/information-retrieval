@@ -88,8 +88,7 @@ class Index:
 
     def loadStoredIndex(self):
         storage = Storage()
-        self.dictionary = storage.loadDictionary()
-        self.ngrams = storage.loadNGrams()
+        self = storage.loadIndex()
 
 
     def storeIndex(self):
@@ -97,8 +96,9 @@ class Index:
         self.timer.start()
 
         storage = Storage()
-        storage.storeDictionary(self.dictionary)
-        storage.storeNGrams(self.ngrams)
+        #storage.storeDictionary(self.dictionary)
+        #storage.storeNGrams(self.ngrams)
+        storage.storeIndex(self)
 
         self.timer.stop()
 

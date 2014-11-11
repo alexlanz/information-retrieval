@@ -16,6 +16,11 @@ class Storage:
         self.store(fileName, ngrams)
 
 
+    def storeIndex(self, index):
+        fileName = self.getIndexFileName()
+        self.store(fileName, index)
+
+
     def store(self, fileName, object):
         if not os.path.isdir(self.STORAGE_DIRECTORY):
             os.mkdir(self.STORAGE_DIRECTORY)
@@ -35,6 +40,11 @@ class Storage:
         return self.load(fileName)
 
 
+    def loadIndex(self):
+        fileName = self.getIndexFileName()
+        return self.load(fileName)
+
+
     def load(self, fileName):
         if not os.path.exists(fileName):
             raise ValueError("File " + fileName + " does not exist.")
@@ -44,6 +54,10 @@ class Storage:
         file.close()
 
         return object
+
+
+    def getIndexFileName(self):
+        return self.STORAGE_DIRECTORY + "index"
 
 
     def getDictionaryFileName(self):
