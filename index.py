@@ -20,6 +20,7 @@ class Index:
     parserType = None
     vectorSpace = None
     vectorProvider = None
+    indexedDocuments = 0
 
     def __init__(self, source, parser):
         self.source = source
@@ -27,6 +28,7 @@ class Index:
         self.dictionary = Dictionary()
         self.vectorSpace = VectorSpace()
         self.vectorProvider = None
+        self.indexedDocuments = 0
 
         self.timer = Timer()
         self.timer.start()
@@ -63,6 +65,8 @@ class Index:
             vector = self.vectorProvider.createVectorForDocument(document, len(documents))
             self.vectorSpace.addDocumentVector(document, vector)
 
+        self.indexedDocuments = len(documents)
+
 
 
     def loadStoredIndex(self):
@@ -98,6 +102,10 @@ class Index:
 
     def getVectorProvider(self):
         return self.vectorProvider
+
+
+    def getNumberOfIndexDocuments(self):
+        return self.indexedDocuments
 
 
 class Posting:

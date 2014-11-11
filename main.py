@@ -45,7 +45,7 @@ while True:
     parsedQuery = parser.parseQuery(query)
     result = queryExecutor.executeQuery(parsedQuery)
 
-    print("Number\tRank\tDocument")
+    print("Rank\tSimilarity\tDocument")
 
     position = 1
     for item in result:
