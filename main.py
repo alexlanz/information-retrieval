@@ -3,6 +3,7 @@ from index import IndexSource
 from parser import Parser
 from parser import ParserType
 from query import QueryExecutor
+from statistics import Statistic
 
 # Index source
 print("Do you want to create a new index or load an stored index?")
@@ -34,6 +35,7 @@ print("Query execution:")
 print("You can leave the program by entering 'exit'.\n")
 
 queryExecutor = QueryExecutor(index)
+statistics = Statistic()
 
 while True:
     query = input("Query: ")
@@ -54,6 +56,11 @@ while True:
 
     print("Execution time: " + queryExecutor.getTimer().getElapsedMillisecondsString())
     print("Number of results: " + str(len(result)) + "\n")
+    recallList = statistics.getRecallAtk(result)
+    precisionList = statistics.getPrecisionAtk(result)
+    statistics.printRecall(recallList)
+    statistics.printPrecision(precisionList)
+    statistics.plotRecallPrecision(recallList, precisionList)
 
 print("Exiting form query execution ...\n")
 
