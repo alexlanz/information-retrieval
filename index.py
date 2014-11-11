@@ -1,7 +1,6 @@
 from enum import Enum
-from nltk.util import ngrams
 from utils import Timer
-from parser import Parser
+from parser import NGramParser
 from documents import DocumentManager
 from storage import Storage
 
@@ -18,13 +17,12 @@ class Index:
     timer = None
     dictionary = None
     ngrams = None
-    parserType = None
 
-    def __init__(self, source, parser):
+    def __init__(self, source, indexParser):
         self.source = source
-        self.parser = parser
+        self.parser = indexParser
         self.dictionary = Dictionary()
-        self.ngrams = {}
+        self.ngrams = NGrams()
 
         self.timer = Timer()
         self.timer.start()
@@ -47,20 +45,22 @@ class Index:
         docCoordinator = DocumentManager("documents")
         documents = docCoordinator.loadDocuments()
 
+        bigramParser = NGramParser(2)
+
         for document in documents:
             text = docCoordinator.getDocumentText(document)
-            tokens = self.parser.parseTokensFromText(text)
+            tokens = self.parser.parse(text)
 
             for position, token in enumerate(tokens):
+
                 if not self.dictionary.existsPostingsList(token):
                     postingList = self.dictionary.createPostingsList(token)
 
-                    bigrams = ngrams(token, 2, pad_left=True, pad_right=True, pad_symbol='$')
-                    bigramsList = list(bigrams)
+                    bigrams = bigramParser.parseNGramsWithPadSymbol(token)
 
-                    for i in range(0, len(bigramsList)):
-                        bigram = ''.join(bigramsList[i])
-                        self.ngrams[bigram] = NGramWord(token, i)
+                    for i in range(0, len(bigrams)):
+                        bigram = bigrams[i]
+                        self.ngrams.addPart(bigram, NGramPart(token, i))
 
                 else:
                     postingList = self.dictionary.getPostingsList(token)
@@ -89,6 +89,8 @@ class Index:
     def getDictionary(self):
         return self.dictionary
 
+    def getNGrams(self):
+        return self.ngrams
 
     def getTimer(self):
         return self.timer
@@ -188,7 +190,7 @@ class Dictionary:
         return self.terms[term]
 
 
-class NGramWord:
+class NGramPart:
 
     term = None
     position = None
@@ -202,3 +204,26 @@ class NGramWord:
 
     def getPosition(self):
         return self.position
+
+
+class NGrams:
+
+    ngrams = None
+
+    def __init__(self):
+        self.ngrams = {}
+
+    def addPart(self, ngram, part):
+        if not ngram in self.ngrams.keys():
+            self.ngrams[ngram] = []
+
+        self.ngrams[ngram].append(part)
+
+    def getList(self, ngram):
+        return self.ngrams[ngram]
+
+    def pr(self):
+        bigrams = self.ngrams['he']
+
+        for bigramPart in bigrams:
+            print("Position: " + str(bigramPart.getPosition()) + "\tTerm: " + bigramPart.getTerm())

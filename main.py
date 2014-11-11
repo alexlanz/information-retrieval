@@ -1,7 +1,7 @@
 from index import Index
 from index import IndexSource
-from parser import Parser
-from parser import ParserType
+from parser import IndexParser
+from parser import QueryParser
 from query import QueryExecutor
 
 # Index source
@@ -23,16 +23,17 @@ while True:
 
 
 # Parser
-parser = Parser(ParserType.simple)
+indexParser = IndexParser()
 
 # Index
-index = Index(indexSource, parser)
+index = Index(indexSource, indexParser)
 print("Time for creating the index: " + index.getTimer().getElapsedMillisecondsString() + "\n")
 
 # Query
 print("Query execution:")
 print("You can leave the program by entering 'exit'.\n")
 
+queryParser = QueryParser(index.getNGrams())
 queryExecutor = QueryExecutor(index)
 
 while True:
@@ -42,7 +43,17 @@ while True:
         break
 
     # Query execution
-    parsedQuery = parser.parseQuery(query)
+    parsedQuery = queryParser.parse(query)
+
+    '''for query in parsedQuery:
+        print('Search Tokens')
+        for token in query.getSearchTokens():
+            print(token)
+
+        print('Excluded Tokens')
+        for token in query.getExcludedTokens():
+            print(token)'''
+
     result = queryExecutor.executeQuery(parsedQuery)
 
     print("Number\tRank\tDocument")
@@ -52,6 +63,7 @@ while True:
         print("" + str(position) + "\t" + "{0:.3f}".format(item.getRank()) + "\t" + item.getDocument().getPath())
         position += 1
 
+    print("Parse time: " + queryParser.getTimer().getElapsedMillisecondsString())
     print("Execution time: " + queryExecutor.getTimer().getElapsedMillisecondsString())
     print("Number of results: " + str(len(result)) + "\n")
 

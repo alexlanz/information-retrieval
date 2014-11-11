@@ -21,16 +21,7 @@ Models > punkt > Download
 ### Execution
 
 ```bash
-python / python3 main.py
-```
-
-### Settings
-
-In the main.py file, the configuration of the parse can be chosen:
-
-```python
-parser = Parser(ParserType.simple)
-parser = Parser(ParserType.wordprocessing)
+python3 main.py
 ```
 
 ### Books

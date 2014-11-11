@@ -1,44 +1,32 @@
-from enum import Enum
 import nltk
-from nltk.stem.porter import PorterStemmer
-from nltk.stem.wordnet import WordNetLemmatizer
-from nltk.corpus import stopwords
+from nltk.util import ngrams
+from utils import Timer
 from query import Query
 
+class IndexParser:
 
-class ParserType(Enum):
-    simple = 1
-    wordprocessing = 2
-
-
-class Parser:
-
-    type = None
-    stemmer = None
-    lemmatizer = None
-    stopWords = None
-
-    def __init__(self, type):
-        self.type = type
-
-        if self.type == ParserType.wordprocessing:
-            self.stemmer = PorterStemmer()
-            self.lemmatizer = WordNetLemmatizer()
-            self.stopWords = stopwords.words("english")
-
-
-    def parseTokensFromText(self, text):
+    def parse(self, text):
         tokenList = nltk.word_tokenize(text)
-
-        if self.type == ParserType.wordprocessing:
-            parsedTokenList = [self.applyTextProcessing(token.lower()) for token in tokenList if (token.isalpha()) and (not token.lower() in self.stopWords)]
-        else:
-            parsedTokenList = [token.lower() for token in tokenList if token.isalpha()]
-
+        parsedTokenList = [token.lower() for token in tokenList if token.isalpha() and self.is_ascii(token)]
         return parsedTokenList
 
+    def is_ascii(self, string):
+        return all(ord(c) < 128 for c in string)
 
-    def parseQuery(self, query):
+
+class QueryParser:
+
+    ngrams = None
+    timer = None
+
+    def __init__(self, ngrams):
+        self.ngrams = ngrams
+
+
+    def parse(self, query):
+        self.timer = Timer()
+        self.timer.start()
+
         rawQueries = query.split(sep="+")
         parsedQueries = []
 
@@ -49,32 +37,143 @@ class Parser:
             for token in rawQuery.strip().split(sep=" "):
                 token = token.lower()
 
-                if self.type == ParserType.wordprocessing:
-                    if not token in self.stopWords:
-                        
-                        if(token.startswith('-')):
-                            excludedToken = self.applyTextProcessing(token[1:])
-                            excludedTokens.append(excludedToken)
-                        else:
-                            searchedTokens.append(self.applyTextProcessing(token))
+                if token.startswith('-'):
+                    excludedTokens.append(token[1:])
+                elif self.isWildcardToken(token):
+                    wildcardTokens = self.getTokensForWildcardToken(token)
+                    searchedTokens.extend(wildcardTokens)
                 else:
-                    if(token.startswith('-')):
-                        excludedTokens.append(token[1:])
-                    else:
-                        searchedTokens.append(token)
+                    searchedTokens.append(token)
 
             parsedQueries.append(Query(searchedTokens, excludedTokens))
+
+        self.timer.stop()
 
         return parsedQueries
 
 
-    def applyTextProcessing(self, token):
-        stemmedToken = self.applyStemming(token)
-        lemmatizedToken = self.applyLemmatization(stemmedToken)
-        return lemmatizedToken
+    def getTimer(self):
+        return self.timer
 
-    def applyStemming(self, token):
-        return self.stemmer.stem(token)
 
-    def applyLemmatization(self, token):
-        return self.lemmatizer.lemmatize(token)
+    def isWildcardToken(self, token):
+        return '*' in token
+
+
+    def getTokensForWildcardToken(self, token):
+        wildcardParts = self.getSplitWildcardTokenParts(token)
+
+        bigramParser = NGramParser(2)
+        bigramsOfParts = []
+
+        for part in wildcardParts:
+            bigramsOfParts.append(bigramParser.parseNGramsWithoutPadSymbol(part))
+
+        matchedNGramParts = []
+        for bigrams in bigramsOfParts:
+            matchedNGramParts.append(self.getMatchedNgramParts(bigrams))
+
+        finalNGramParts = self.combineMatchedNgramParts(matchedNGramParts)
+
+        tokens = []
+        for part in finalNGramParts:
+            tokens.append(part.getTerm())
+
+        return tokens
+
+    def getSplitWildcardTokenParts(self, token):
+        if token.startswith('*'):
+            token = token[1:]
+        else:
+            token = '$' + token
+
+        if token.endswith('*'):
+            token = token[:len(token)-1]
+        else:
+            token += '$'
+
+        return token.split('*')
+
+    def getMatchedNgramParts(self, ngrams):
+        results = self.ngrams.getList(ngrams[0])
+
+        for i in range(1, len(ngrams)):
+            ngram = ngrams[i]
+            occurrenceList = self.ngrams.getList(ngram)
+
+            roundResult = []
+
+            for result in results:
+                termFound = False
+
+                for occurrence in occurrenceList:
+                    if result.getTerm() == occurrence.getTerm():
+                        termFound = True
+
+                        if (result.getPosition() + 1) == occurrence.getPosition():
+                            roundResult.append(occurrence)
+                            break
+                    else:
+                        if termFound:
+                            break
+
+            results = roundResult
+
+
+        return results
+
+    def combineMatchedNgramParts(self, ngramParts):
+        results = ngramParts[0]
+
+        for i in range(1, len(ngramParts)):
+            ngramPart = ngramParts[i]
+
+            roundResult = []
+
+            for result in results:
+                termFound = False
+
+                for occurrence in ngramPart:
+                    if result.getTerm() == occurrence.getTerm():
+                        termFound = True
+
+                        if (result.getPosition()) <= occurrence.getPosition():
+                            roundResult.append(occurrence)
+                            break
+                    else:
+                        if termFound:
+                            break
+
+            results = roundResult
+
+
+        return results
+
+class NGramParser:
+
+    n = 2
+
+    def __init__(self, n):
+        self.n = n
+
+    def parseNGramsWithPadSymbol(self, term):
+        ngramsGenerator = ngrams(term, self.n, pad_left=True, pad_right=True, pad_symbol='$')
+        ngramsList = list(ngramsGenerator)
+
+        ngramsListJoined = []
+
+        for ngram in ngramsList:
+            ngramsListJoined.append(''.join(ngram))
+
+        return ngramsListJoined
+
+    def parseNGramsWithoutPadSymbol(self, term):
+        ngramsGenerator = ngrams(term, self.n, pad_left=False, pad_right=False)
+        ngramsList = list(ngramsGenerator)
+
+        ngramsListJoined = []
+
+        for ngram in ngramsList:
+            ngramsListJoined.append(''.join(ngram))
+
+        return ngramsListJoined
