@@ -21,35 +21,33 @@ class VectorSpace:
 class VectorProvider:
 
     sortedTerms = []
-    index = None
 
-    def __init__(self, sortedTerms, index):
+    def __init__(self, sortedTerms):
         self.sortedTerms = sortedTerms
-        self.index = index
 
 
-    def createVectorForDocument(self, document, totalDocuments):
+    def createVectorForDocument(self, index, document, totalDocuments):
         vector = []
         for term in self.sortedTerms:
-            vector.append(self.calcualateTfIdfWeighting(term, document, totalDocuments))
+            postingsList = index.getDictionary().getPostingsList(term)
+            vector.append(self.calcualateTfIdfWeighting(postingsList, document, totalDocuments))
 
         return vector
 
 
-    def createVectorForQuery(self, terms, totalDocs):
+    def createVectorForQuery(self, index, terms, totalDocs):
         vector = []
         for term in self.sortedTerms:
             if term in terms:
-                vector.append(self.calculateTfIdfWeightingQuery(term, terms, totalDocs))
+                postingsList = index.getDictionary().getPostingsList(term)
+                vector.append(self.calculateTfIdfWeightingQuery(term, postingsList, terms, totalDocs))
             else:
                 vector.append(0)
 
         return vector
 
 
-    def calculateWeightedTermFrequency(self, term, document):
-        postingsList = self.index.getDictionary().getPostingsList(term)
-
+    def calculateWeightedTermFrequency(self, postingsList, document):
         tf = 0
         for posting in postingsList.getPostings():
             if posting.getDocument() == document:
@@ -68,17 +66,17 @@ class VectorProvider:
         return numpy.log10(1 + tf)
 
 
-    def calculateWeightedIdf(self, term, totalDocs):
+    def calculateWeightedIdf(self, postingsList, totalDocs):
 
-        df = len(self.index.getDictionary().getPostingsList(term).getPostings())
+        df = len(postingsList.getPostings())
 
         return numpy.log10(totalDocs/df)
 
 
-    def calcualateTfIdfWeighting(self, term, document, totalDocs):
-        return self.calculateWeightedTermFrequency(term, document) * self.calculateWeightedIdf(term, totalDocs)
+    def calcualateTfIdfWeighting(self, postingsList, document, totalDocs):
+        return self.calculateWeightedTermFrequency(postingsList, document) * self.calculateWeightedIdf(postingsList, totalDocs)
 
 
-    def calculateTfIdfWeightingQuery(self, term, terms, totalDocs):
-        return self.calculateWeightedQueryTermFrequency(term, terms) * self.calculateWeightedIdf(term, totalDocs)
+    def calculateTfIdfWeightingQuery(self, term, postingsList, terms, totalDocs):
+        return self.calculateWeightedQueryTermFrequency(term, terms) * self.calculateWeightedIdf(postingsList, totalDocs)
 

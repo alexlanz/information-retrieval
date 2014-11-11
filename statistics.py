@@ -56,6 +56,3 @@ class Statistic:
     def printPrecision(self, precisionList):
         for item in precisionList:
             print("Precision at k: " + str(item[0]) + "\t value: " + str(item[1]))
-
-
-

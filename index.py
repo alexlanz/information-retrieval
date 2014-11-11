@@ -2,35 +2,27 @@ from enum import Enum
 from utils import Timer
 from parser import NGramParser
 from documents import DocumentManager
-from storage import Storage
 from vectorspace import VectorProvider
 from vectorspace import VectorSpace
 
 
-class IndexSource(Enum):
-    new = 1
-    stored = 2
-
-
 class Index:
 
-    source = None
     parser = None
     timer = None
     dictionary = None
     ngrams = None
+    documents = None
     vectorSpace = None
     vectorProvider = None
-    indexedDocuments = 0
 
-    def __init__(self, source, indexParser):
-        self.source = source
+    def __init__(self, indexParser):
         self.parser = indexParser
         self.dictionary = Dictionary()
         self.ngrams = NGrams()
+        self.documents = []
         self.vectorSpace = VectorSpace()
         self.vectorProvider = None
-        self.indexedDocuments = 0
 
         self.timer = Timer()
         self.timer.start()
@@ -41,21 +33,17 @@ class Index:
 
 
     def setup(self):
-        if self.source == IndexSource.new:
-            self.createNewIndex()
-        elif self.source == IndexSource.stored:
-            self.loadStoredIndex()
-        else:
-            raise ValueError("Invalid index source")
+        self.createNewIndex()
+
 
 
     def createNewIndex(self):
         docCoordinator = DocumentManager("documents")
-        documents = docCoordinator.loadDocuments()
+        self.documents = docCoordinator.loadDocuments()
 
         bigramParser = NGramParser(2)
 
-        for document in documents:
+        for document in self.documents:
             text = docCoordinator.getDocumentText(document)
             tokens = self.parser.parse(text)
 
@@ -75,32 +63,8 @@ class Index:
 
                 postingList.addPosting(document, position)
 
-        #VectorSpace
-        self.vectorProvider = VectorProvider(self.getDictionary().getSortedTerms(), self)
-
-        for document in documents:
-            vector = self.vectorProvider.createVectorForDocument(document, len(documents))
-            self.vectorSpace.addDocumentVector(document, vector)
-
-        self.indexedDocuments = len(documents)
-
-
-
-    def loadStoredIndex(self):
-        storage = Storage()
-        self = storage.loadIndex()
-
-
-    def storeIndex(self):
-        self.timer = Timer()
-        self.timer.start()
-
-        storage = Storage()
-        #storage.storeDictionary(self.dictionary)
-        #storage.storeNGrams(self.ngrams)
-        storage.storeIndex(self)
-
-        self.timer.stop()
+        # VectorSpace
+        self.calculateVectorSpace()
 
 
     def getDictionary(self):
@@ -125,8 +89,16 @@ class Index:
         return self.vectorProvider
 
 
-    def getNumberOfIndexDocuments(self):
-        return self.indexedDocuments
+    def getNumberOfDocuments(self):
+        return len(self.documents)
+
+
+    def calculateVectorSpace(self):
+        self.vectorProvider = VectorProvider(self.getDictionary().getSortedTerms())
+
+        for document in self.documents:
+            vector = self.vectorProvider.createVectorForDocument(self, document, self.getNumberOfDocuments())
+            self.vectorSpace.addDocumentVector(document, vector)
 
 
 class Posting:

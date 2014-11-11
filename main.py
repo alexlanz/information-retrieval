@@ -1,33 +1,14 @@
 from index import Index
-from index import IndexSource
 from parser import IndexParser
 from parser import QueryParser
 from query import QueryExecutor
 from statistics import Statistic
 
-# Index source
-print("Do you want to create a new index or load an stored index?")
-print("[1] Create new index")
-print("[2] Load stored index")
-
-while True:
-    indexOption = input("What's your choice [1/2]: ")
-
-    if indexOption == '1':
-        indexSource = IndexSource.new
-        break
-    elif indexOption == '2':
-        indexSource = IndexSource.stored
-        break
-
-    print("Invalid option '" + indexOption + "', please choose again.")
-
-
 # Parser
 indexParser = IndexParser()
 
 # Index
-index = Index(indexSource, indexParser)
+index = Index(indexParser)
 print("Time for creating the index: " + index.getTimer().getElapsedMillisecondsString() + "\n")
 
 # Query
@@ -72,27 +53,8 @@ while True:
     if(len(result) > 0):
         recallList = statistics.getRecallAtk(result)
         precisionList = statistics.getPrecisionAtk(result)
-
         statistics.printRecall(recallList)
         statistics.printPrecision(precisionList)
-    print("")
+        print("")
 
 print("Exiting form query execution ...\n")
-
-
-# Store index
-print("Do you want to store the index?")
-while True:
-    indexOption = input("[y/n]: ")
-
-    if indexOption == 'y':
-        index.storeIndex()
-
-        timerForIndexStoring = index.getTimer()
-        print("Time for storing the index: " + timerForIndexStoring.getElapsedMillisecondsString() + "\n")
-
-        break
-    elif indexOption == 'n':
-        break
-
-    print("Invalid option '" + indexOption + "', please choose again.")
