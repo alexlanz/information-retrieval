@@ -42,7 +42,7 @@ class QueryExecutor:
             matchedResultsList.append(matchedResults)
 
         matchedResults = QueryResult.mergeWithIntersection(matchedResultsList)
-        queryVector = self.index.getVectorProvider().createVectorForQuery(searchtokens, self.index.getNumberOfIndexDocuments())
+        queryVector = self.index.getVectorProvider().createVectorForQuery(self.index, searchtokens, self.index.getNumberOfDocuments())
 
         rankedResult = RankedResult()
         for document, queryResultItem in matchedResults.getItems().items():
