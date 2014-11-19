@@ -15,3 +15,6 @@ sudo python setup.py install
 cd ..
 sudo rm -rf snap-1.1-2.3-centos6.5-x64-py2.6
 sudo rm -rf snap-1.1-2.3-centos6.5-x64-py2.6.tar.gz
+
+# Install gnuplot
+sudo apt-get install -y gnuplot
