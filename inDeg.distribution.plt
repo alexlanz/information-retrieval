@@ -1,5 +1,5 @@
 #
-# In-degree distribution. G(4039, 88234). 1314 (0.3253) nodes with in-deg > avg deg (43.7), 597 (0.1478) with >2*avg.deg (Wed Nov 19 10:44:20 2014)
+# In-degree distribution. G(4039, 88234). 1314 (0.3253) nodes with in-deg > avg deg (43.7), 597 (0.1478) with >2*avg.deg (Wed Nov 19 20:47:13 2014)
 #
 
 set title "In-degree distribution. G(4039, 88234). 1314 (0.3253) nodes with in-deg > avg deg (43.7), 597 (0.1478) with >2*avg.deg"

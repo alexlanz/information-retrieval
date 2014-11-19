@@ -100,10 +100,12 @@ Nodes = snap.TIntFltH()
 Edges = snap.TIntPrFltH()
 snap.GetBetweennessCentr(Graph, Nodes, Edges, 1.0)
 print("Top 10 betweenness:")
-for node in Nodes:
+for idx,node in enumerate(sorted(Nodes, key=lambda elem:Nodes[elem], reverse=True)):
+    if idx == 10:
+        break
     print "node: %d centrality: %f" % (node, Nodes[node])
-for edge in Edges:
-    print "edge: (%d, %d) centrality: %f" % (edge.GetVal1(), edge.GetVal2(), Edges[edge])
+#for edge in Edges:
+#    print "edge: (%d, %d) centrality: %f" % (edge.GetVal1(), edge.GetVal2(), Edges[edge])
 print("")
 
 # Eigen centrality
