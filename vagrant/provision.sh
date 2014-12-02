@@ -5,16 +5,13 @@ sudo apt-get update
 sudo apt-get upgrade -y
 
 # Install pip
-sudo apt-get install -y python-pip
+sudo apt-get install -y python-pip python3-pip
 
-# Install Snap.py
-wget http://snap.stanford.edu/snappy/release/snap-1.1-2.3-centos6.5-x64-py2.6.tar.gz
-tar zxvf snap-1.1-2.3-centos6.5-x64-py2.6.tar.gz
-cd snap-1.1-2.3-centos6.5-x64-py2.6/
-sudo python setup.py install
-cd ..
-sudo rm -rf snap-1.1-2.3-centos6.5-x64-py2.6
-sudo rm -rf snap-1.1-2.3-centos6.5-x64-py2.6.tar.gz
+# Install python module requirements
+sudo apt-get install -y python3-numpy python3-scipy python3-matplotlib
 
-# Install gnuplot
-sudo apt-get install -y gnuplot
+# Install pip packages
+sudo pip3 install -U numpy
+sudo pip3 install -U scipy
+sudo pip3 install -U scikit-learn
+sudo pip3 install -U nltk
