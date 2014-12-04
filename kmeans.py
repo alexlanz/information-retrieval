@@ -6,7 +6,7 @@ from sklearn.cluster import KMeans
 from time import time
 
 print("Loading 20 newsgroups dataset:")
-dataset = fetch_20newsgroups(subset='train')
+dataset = fetch_20newsgroups(subset='train', remove=("headers", "footers"))
 
 print("%d documents" % len(dataset.data))
 print("%d categories" % len(dataset.target_names))
