@@ -9,8 +9,8 @@ import time
 
 remove = ('headers', 'footers')
 
-newsgroups_train = fetch_20newsgroups(subset="train", remove=remove, data_home="./newsgroups/train")
-newsgroups_test = fetch_20newsgroups(subset="test", remove=remove, data_home="./newsgroups/test")
+newsgroups_train = fetch_20newsgroups(subset="train", remove=remove)
+newsgroups_test = fetch_20newsgroups(subset="test", remove=remove)
 
 Y_train = newsgroups_train.target
 Y_test = newsgroups_test.target
