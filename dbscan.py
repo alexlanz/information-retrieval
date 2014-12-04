@@ -7,9 +7,13 @@ from sklearn.preprocessing import StandardScaler
 
 ##############################################################################
 # Generate sample data
-centers = [[1, 1], [-1, -1], [1, -1]]
-X, labels_true = make_blobs(n_samples=750, centers=centers, cluster_std=0.4,
-                            random_state=0)
+data_train = fetch_20newsgroups(subset='train', categories=categories,
+                                shuffle=True, random_state=42,
+                                remove=remove)
+
+data_test = fetch_20newsgroups(subset='test', categories=categories,
+                               shuffle=True, random_state=42,
+                               remove=remove)
 
 X = StandardScaler().fit_transform(X)
 
