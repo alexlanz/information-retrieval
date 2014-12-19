@@ -1,6 +1,5 @@
-__pycache__
-*.pyc
-*.png
-.vagrant
-.idea
 .DS_STORE
+.idea
+.vagrant
+__pycache__
+data
