@@ -20,7 +20,7 @@ class SessionRepository:
 
 
     def getById(self, id):
-        return self.sessions[id]
+        return self.sessions.get(id)
 
 
     def getAllVectors(self):
