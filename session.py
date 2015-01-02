@@ -14,3 +14,6 @@ class Session:
         self.numberOfItems = numberOfItems
         self.special = special
         self.buy = buy
+
+
+
