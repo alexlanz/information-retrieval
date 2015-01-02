@@ -26,7 +26,7 @@ class SessionRepository:
     def getAllVectors(self):
         vectors = []
 
-        for id, session in self.sessions.iteritems():
+        for id, session in self.sessions.items():
             vectors.append(session.getVector())
 
         return vectors
@@ -35,7 +35,7 @@ class SessionRepository:
     def getAllBuyingLabels(self):
         labels = []
 
-        for id, session in self.sessions.iteritems():
+        for id, session in self.sessions.items():
             labels.append((1 if session.isBuyingEvent() else 0))
 
         return labels
