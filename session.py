@@ -14,3 +14,9 @@ class Session:
         self.numberOfItems = numberOfItems
         self.special = special
         self.buy = buy
+
+    def getVector(self):
+        return [self.duration, self.numberOfClicks, self.numberOfItems, (1 if self.special else 0)]
+
+    def isBuyingEvent(self):
+        return self.buy
