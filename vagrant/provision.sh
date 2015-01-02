@@ -1,8 +1,13 @@
 #!/bin/bash
 
 # Update
-sudo apt-get update
-sudo apt-get upgrade -y
+apt-get update
+apt-get upgrade -y
 
 # Install pip
-sudo apt-get install -y python-pip python3-pip
+apt-get install -y python-pip python3-pip
+
+# Install scikit
+sudo apt-get install -y python-numpy python3-numpy python-scipy python3-scipy
+sudo pip install -U scikit-learn
+sudo pip3 install -U scikit-learn
