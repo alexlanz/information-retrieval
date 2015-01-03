@@ -11,7 +11,6 @@ class Items:
 
 
     def addItem(self, item):
-
         self.itemPositions = None
 
         if item not in self.items:
@@ -19,7 +18,8 @@ class Items:
 
 
     def addBuyingEvent(self, item, day):
-        self.items[item].append(day)
+        if item in self.items:
+            self.items[item].append(day)
 
 
     def getCountOfItems(self):
