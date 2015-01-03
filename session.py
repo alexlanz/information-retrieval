@@ -20,3 +20,6 @@ class Session:
 
     def isBuyingEvent(self):
         return self.buy
+    
+    def getId(self):
+        return self.id
