@@ -18,7 +18,7 @@ repository.add(session05);
 X = repository.getAllVectors()
 y = repository.getAllBuyingLabels()
 
-neigh = KNeighborsClassifier(n_neighbors=5)
+neigh = KNeighborsClassifier(n_neighbors=3)
 neigh.fit(X, y)
 
 sessionPredict = Session(6, 117, 3, 1, True, False)

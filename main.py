@@ -12,12 +12,17 @@ timer.start()
 print("Start loading clicks file ... ")
 sessionRepository = SessionRepository()
 sessionRepository = fileManager.readSessionFile('yoochoose-clicks-aa.dat', sessionRepository)
+sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ab.dat', sessionRepository)
+sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ac.dat', sessionRepository)
+sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ad.dat', sessionRepository)
+sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ae.dat', sessionRepository)
+sessionRepository = fileManager.readSessionFile('yoochoose-clicks-af.dat', sessionRepository)
 sessionRepository = fileManager.readBuyFile('yoochoose-buys.dat', sessionRepository)
 
 timer.stop()
 
 sessions = sessionRepository.getAll()
-#session = sessionRepository.getById(11299813)
+#session = sessionRepository.getById(11)
 
 #for key, session in sessions.items():
 #    print(str(session.id) + ', ' + str(session.duration) + " sec, " + str(session.numberOfItems) + " items, " + str(session.numberOfClicks) + " clicks, SPECIAL: " + str(session.special) + ", BUY: " + str(session.buy))
@@ -28,10 +33,10 @@ print("Done loading clicks file in " + timer.getElapsedSecondsString())
 X = sessionRepository.getAllVectors()
 y = sessionRepository.getAllBuyingLabels()
 
-neigh = KNeighborsClassifier(n_neighbors=5)
+neigh = KNeighborsClassifier(n_neighbors=1)
 neigh.fit(X, y)
 
-session01 = Session(1, 351.029, 4, 4, 0, 0)
+'''session01 = Session(1, 351.029, 4, 4, 0, 0)
 session02 = Session(2, 359.275, 5, 6, 0, 0)
 session03 = Session(3, 745.378, 3, 3, 0, 0)
 session04 = Session(4, 1034.468, 2, 2, 0, 0)
@@ -114,6 +119,11 @@ sessionRepositoryTest.add(session47)
 sessionRepositoryTest.add(session48)
 sessionRepositoryTest.add(session49)
 
+X = sessionRepositoryTest.getAllVectors()'''
+
+sessionRepositoryTest = SessionRepository()
+sessionRepositoryTest = fileManager.readSessionFile('yoochoose-clicks-ax.dat', sessionRepositoryTest)
 X = sessionRepositoryTest.getAllVectors()
+
 predictions = neigh.predict(X)
 print(predictions)
