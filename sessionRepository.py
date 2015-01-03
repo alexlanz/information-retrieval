@@ -15,8 +15,8 @@ class SessionRepository:
         return self.add(session)
 
 
-    def getAll(self):
-        return self.sessions
+    def getAllSessions(self):
+        return self.sessions.values()
 
 
     def getById(self, id):
@@ -39,3 +39,15 @@ class SessionRepository:
             labels.append((1 if session.isBuyingEvent() else 0))
 
         return labels
+    
+    
+    def getAllBuyingSessions(self):
+        buyingSessions = []     
+        for session in self.sessions.values():
+            if session.isBuyingEvent():
+                buyingSessions.append(session)
+        return buyingSessions
+    
+    
+    def getNumberOfSessions(self):
+        return len(self.sessions.keys())
