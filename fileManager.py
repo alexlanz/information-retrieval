@@ -39,7 +39,7 @@ class FileManager:
         with open(self.directory + filename, 'r', encoding='utf-8') as f:
             for line in f:
                 data = line.split(',')
-                items.addBuyingEvent(int(data[2]), datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ"))
+                items.addBuyingEvent(int(data[2]), datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ").date())
                 session = repository.getById(int(data[0]))
                 if session is not None:
                     session.buy = True
@@ -108,4 +108,5 @@ class SessionManager:
 
 
     def getSession(self):
-        return Session(self.id, self.startTime, self.getElapsedTime(), self.numberOfClicks, self.items, self.buy)
+        startTime = datetime.strptime(self.startTime, "%Y-%m-%dT%H:%M:%S.%fZ").date()
+        return Session(self.id, startTime, self.getElapsedTime(), self.numberOfClicks, self.items, self.buy)
