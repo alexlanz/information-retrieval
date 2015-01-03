@@ -10,13 +10,15 @@ class Items:
         self.itemPositions = None
 
 
-    def addItem(self, item, day):
+    def addItem(self, item):
 
         self.itemPositions = None
 
         if item not in self.items:
             self.items[item] = []
 
+
+    def addBuyingEvent(self, item, day):
         self.items[item].append(day)
 
 
