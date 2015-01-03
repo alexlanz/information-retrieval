@@ -11,7 +11,6 @@ class Items:
 
 
     def addItem(self, item):
-
         self.itemPositions = None
 
         if item not in self.items:
