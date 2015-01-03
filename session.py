@@ -4,6 +4,7 @@ class Session:
     duration = 0               # Integer in seconds
     numberOfClicks = 0
     numberOfItems = 0
+    viewedItems = []
     special = False
     buy = False
 
@@ -23,3 +24,6 @@ class Session:
     
     def getId(self):
         return self.id
+    
+    def setViewedItems(self, viewedItems):
+        self.viewedItems = viewedItems
