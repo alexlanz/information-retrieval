@@ -45,6 +45,15 @@ class FileManager:
         return repository
 
 
+    def getBoughtItemList(self, sessionId):
+        boughtItems = []
+        with open(self.directory + 'yoochoose-buys.dat', 'r', encoding='utf-8') as f:
+            for line in f:
+                data = line.split(',')
+                if(sessionId == int(data[0])):
+                    boughtItems.append(data[2])
+        return boughtItems
+
 
 class SessionManager:
 

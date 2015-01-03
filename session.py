@@ -8,6 +8,8 @@ class Session:
     buy = False
     
     trendingWeightedValue = 3
+    buyingThreashold = 50
+    predictedPurchases = []
 
     def __init__(self, id, date, duration, numberOfClicks, viewedItems, buy):
         self.id = id
@@ -27,6 +29,8 @@ class Session:
             arr[pos] = items.getCountOfViewsForItemWithin7Days(itemId, self.date)
             if(trending):
                 arr[pos] = arr[pos] + self.trendingWeightedValue
+            if arr[pos] > self.buyingThreashold:
+                self.predictedPurchases.append(itemId)
         return arr
 
     def isBuyingEvent(self):
@@ -37,3 +41,7 @@ class Session:
     
     def setViewedItems(self, viewedItems):
         self.viewedItems = viewedItems
+        
+    def getPredictedBoughtItems(self):
+        return set(self.predictedPurchases)
+    
