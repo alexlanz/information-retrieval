@@ -4,22 +4,29 @@ class Session:
     date = None
     duration = 0               # Integer in seconds
     numberOfClicks = 0
-    viewedItems = []
+    viewedItems = {}
     buy = False
+    
+    trendingWeightedValue = 3
 
-    def __init__(self, id, date, duration, numberOfClicks, buy):
+    def __init__(self, id, date, duration, numberOfClicks, viewedItems, buy):
         self.id = id
         self.date = date
         self.duration = duration
         self.numberOfClicks = numberOfClicks
+        self.viewedItems = viewedItems
         self.buy = buy
 
-    def getVector(self):
-        return [self.duration, self.numberOfClicks, self.numberOfItems, (1 if self.special else 0)] + self.getWeightedItemVector()
+    def getVector(self, items):
+        return [self.duration, self.numberOfClicks, self.numberOfItems] + self.getWeightedItemVector(items)
     
-    def getWeightedItemVector(self):
-        arr = []
-        #todo
+    def getWeightedItemVector(self, items):
+        arr = [0] * items.getCountOfItems();
+        for itemId, trending in self.viewedItems:
+            pos = items.getPositionOfItem(itemId)
+            arr[pos] = items.getCountOfViewsForItemWithin7Days(itemId, self.date)
+            if(trending):
+                arr[pos] = arr[pos] + self.trendingWeightedValue
         return arr
 
     def isBuyingEvent(self):
