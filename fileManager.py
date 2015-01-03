@@ -102,4 +102,4 @@ class SessionManager:
 
 
     def getSession(self):
-        return Session(self.id, self.getElapsedTime(), self.numberOfClicks, self.items, self.buy)
+        return Session(self.id, self.startTime, self.getElapsedTime(), self.numberOfClicks, self.items, self.buy)
