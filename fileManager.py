@@ -26,22 +26,23 @@ class FileManager:
                 else:
                     sessionManager.updateSession(data)
 
+            repository.add(sessionManager.getSession())
+
         return repository
 
 
 
-    def readBuyFile(self, filename, repository):
+    def readBuyFile(self, filename, repository, itemViews):
         with open(self.directory + filename, 'r', encoding='utf-8') as f:
             for line in f:
                 data = line.split(',')
+                itemViews.addItem(datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ"), int(data[0]))
                 session = repository.getById(int(data[0]))
                 if(session != None):
                     session.buy = True
                     repository.update(session)
 
         return repository
-
-
 
 
 
@@ -54,7 +55,7 @@ class SessionManager:
 
     startTime = None
     endTime = None
-    items = []
+    items = {}
 
     def __init__(self, data):
         self.id = int(data[0])
@@ -64,7 +65,7 @@ class SessionManager:
         self.startTime = data[1]
         self.endTime = self.startTime
 
-        self.items = [data[2]]
+        self.items[int(data[2])] = [data[2]]
         self.updateSpecial(data[3])
 
 
@@ -83,6 +84,7 @@ class SessionManager:
     def updateEndTime(self, timestamp):
         self.endTime = timestamp
 
+    def isSpecial(self, ca):
 
     def updateSpecial(self, category):
         if category.strip() == "S":
