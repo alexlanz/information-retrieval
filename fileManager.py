@@ -12,12 +12,15 @@ class FileManager:
         self.directory = directory
 
 
-    def readSessionFile(self, filename, repository):
+    def readSessionFile(self, filename, repository, items):
         sessionManager = None
 
         with open(self.directory + filename, 'r', encoding='utf-8') as f:
             for line in f:
+
                 data = line.split(',')
+                items.addItem(int(data[2]))
+
                 if sessionManager is None:
                     sessionManager = SessionManager(data)
                 elif sessionManager.id != int(data[0]):
@@ -36,7 +39,7 @@ class FileManager:
         with open(self.directory + filename, 'r', encoding='utf-8') as f:
             for line in f:
                 data = line.split(',')
-                items.addItem(int(data[0]), datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ"))
+                items.addBuyingEvent(int(data[2]), datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ"))
                 session = repository.getById(int(data[0]))
                 if session is not None:
                     session.buy = True
