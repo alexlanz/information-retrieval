@@ -1,6 +1,6 @@
 from datetime import date, timedelta
 
-class Items:
+class ItemRepository:
 
     items = None
     itemPositions = None
@@ -29,6 +29,10 @@ class Items:
 
     def getPositionOfItem(self, item):
         self.lockItemPositions()
+
+        if item not in self.itemPositions:
+            return None
+
         return self.itemPositions.index(item)
 
 

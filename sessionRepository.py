@@ -23,22 +23,23 @@ class SessionRepository:
         return self.sessions.get(id)
 
 
-    def getAllVectors(self):
+    def getAllVectors(self, itemRepository):
         vectors = []
 
         for id, session in self.sessions.items():
-            vectors.append(session.getVector())
+            vector = session.getVector(itemRepository)
+            vectors.append(vector)
 
         return vectors
 
 
-    def getAllBuyingLabels(self):
-        labels = []
+    def getBuyingEventsVector(self):
+        vector = []
 
         for id, session in self.sessions.items():
-            labels.append((1 if session.isBuyingEvent() else 0))
+            vector.append((1 if session.isBuyingEvent() else 0))
 
-        return labels
+        return vector
     
     
     def getAllBuyingSessions(self):

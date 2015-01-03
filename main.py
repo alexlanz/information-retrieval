@@ -1,134 +1,73 @@
-from fileManager import FileManager
+from parser import Parser
 from session import Session
 from sessionRepository import SessionRepository
 from utils import Timer
 from sklearn.neighbors import KNeighborsClassifier
-from item import Items
+from itemRepository import ItemRepository
 
-fileManager = FileManager('data')
 timer = Timer()
 
+###############################################################
+# Loading files
+###############################################################
 timer.start()
 
-print("Start loading clicks file ... ")
-sessionRepository = SessionRepository()
-items = Items()
-sessionRepository = fileManager.readSessionFile('yoochoose-clicks-aa.dat', sessionRepository, items)
-#sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ab.dat', sessionRepository)
-#sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ac.dat', sessionRepository)
-#sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ad.dat', sessionRepository)
-#sessionRepository = fileManager.readSessionFile('yoochoose-clicks-ae.dat', sessionRepository)
-#sessionRepository = fileManager.readSessionFile('yoochoose-clicks-af.dat', sessionRepository)
 
-sessionRepository = fileManager.readBuyFile('yoochoose-buys.dat', sessionRepository, items)
+parser = Parser('data')
+parser.readSessionFile('yoochoose-clicks-aa.dat')
+#parser.readSessionFile('yoochoose-clicks-ab.dat')
+#parser.readSessionFile('yoochoose-clicks-ac.dat')
+#parser.readSessionFile('yoochoose-clicks-ad.dat')
+#parser.readSessionFile('yoochoose-clicks-ae.dat')
+#parser.readSessionFile('yoochoose-clicks-af.dat')
+
+sessionRepository = parser.readBuyFile('yoochoose-buys.dat')
+
+sessionRepository = parser.getSessionRepository()
+itemRepository = parser.getItemRepository()
 
 timer.stop()
+print("Time for loading files: " + timer.getElapsedSecondsString())
 
 #sessions = sessionRepository.getAllSessions()
-session = sessionRepository.getById(327676)
-
-print(session.getVector(items))
+#session = sessionRepository.getById(327676)
+#print(session.getVector(items))
 
 #for session in sessions:
 #    print(str(session.id) + ', ' + str(session.duration) + " sec, " + str(session.numberOfClicks) + " clicks, BUY: " + str(session.buy))
 
-print("Done loading clicks file in " + timer.getElapsedSecondsString())
+
+###############################################################
+# Training
+###############################################################
+timer.start()
+
+X = sessionRepository.getAllVectors(itemRepository)
+y = sessionRepository.getBuyingEventsVector()
+
+neigh = KNeighborsClassifier(n_neighbors=1)
+neigh.fit(X, y)
+
+timer.stop()
+print("Time for training: " + timer.getElapsedSecondsString())
 
 
-#X = sessionRepository.getAllVectors()
-#y = sessionRepository.getAllBuyingLabels()
+###############################################################
+# Predicting
+###############################################################
+timer.start()
 
-#neigh = KNeighborsClassifier(n_neighbors=1)
-#neigh.fit(X, y)
+parserTest = Parser('data')
+parserTest.readSessionFile('yoochoose-clicks-ax.dat')
 
-'''session01 = Session(1, 351.029, 4, 4, 0, 0)
-session02 = Session(2, 359.275, 5, 6, 0, 0)
-session03 = Session(3, 745.378, 3, 3, 0, 0)
-session04 = Session(4, 1034.468, 2, 2, 0, 0)
-session06 = Session(6, 246.128, 2, 2, 0, 0)
-session07 = Session(7, 12.75, 2, 2, 0, 0)
-session08 = Session(8, 133.919, 1, 2, 0, 0)
-session09 = Session(9, 169.352, 1, 3, 0, 0)
-session11 = Session(11, 783.761, 9, 12, 0, 0)
-session12 = Session(12, 179.445, 1, 2, 0, 0)
-session13 = Session(13, 184.63, 2, 3, 0, 0)
-session14 = Session(14, 215.12, 2, 3, 0, 0)
-session16 = Session(16, 771.466, 1, 3, 0, 0)
-session17 = Session(17, 1.904, 2, 2, 0, 0)
-session18 = Session(18, 19.617, 1, 2, 0, 0)
-session19 = Session(19, 162.294, 2, 4, 0, 0)
-session21 = Session(21, 1181.46, 2, 6, 0, 0)
-session22 = Session(22, 1125.92, 1,  16, 0, 0)
-session23 = Session(23, 809.758, 1, 4, 0, 0)
-session24 = Session(24, 39.489, 2, 4, 0, 0)
-session26 = Session(26, 203.828, 4, 4, 0, 0)
-session27 = Session(27, 1298.677, 9, 10, 0, 0)
-session28 = Session(28, 264.533, 2, 3, 0, 0)
-session29 = Session(29, 317.497, 2, 2, 0, 0)
-session31 = Session(31, 133.612, 1, 2, 0, 0)
-session32 = Session(32, 165.855, 2, 2, 0, 0)
-session33 = Session(33, 281.293, 4, 16, 0, 0)
-session34 = Session(34, 205.134, 2, 2, 0, 0)
-session36 = Session(36, 71.411, 2, 2, 0, 0)
-session37 = Session(37, 35.474, 2, 2, 0, 0)
-session38 = Session(38, 84.759, 2, 3, 0, 0)
-session39 = Session(39, 44.091, 2, 2, 0, 0)
-session41 = Session(41, 122.593, 1, 5, 0, 0)
-session42 = Session(42, 103.51, 1, 2, 0, 0)
-session43 = Session(43, 108.692, 2, 2, 0, 0)
-session44 = Session(44, 788.869, 8, 8, 0, 0)
-session46 = Session(46, 3585.987, 1, 6, 0, 0)
-session47 = Session(47, 49.926, 3, 3, 0, 0)
-session48 = Session(48, 282.492, 4, 4, 0, 0)
-session49 = Session(49, 245.13, 2, 2, 0, 0)
+sessionRepositoryTest = parserTest.getSessionRepository()
+X = sessionRepositoryTest.getAllVectors(itemRepository)
 
-sessionRepositoryTest = SessionRepository()
-sessionRepositoryTest.add(session01)
-sessionRepositoryTest.add(session02)
-sessionRepositoryTest.add(session03)
-sessionRepositoryTest.add(session04)
-sessionRepositoryTest.add(session06)
-sessionRepositoryTest.add(session07)
-sessionRepositoryTest.add(session08)
-sessionRepositoryTest.add(session09)
-sessionRepositoryTest.add(session11)
-sessionRepositoryTest.add(session12)
-sessionRepositoryTest.add(session13)
-sessionRepositoryTest.add(session14)
-sessionRepositoryTest.add(session16)
-sessionRepositoryTest.add(session17)
-sessionRepositoryTest.add(session18)
-sessionRepositoryTest.add(session19)
-sessionRepositoryTest.add(session21)
-sessionRepositoryTest.add(session22)
-sessionRepositoryTest.add(session23)
-sessionRepositoryTest.add(session24)
-sessionRepositoryTest.add(session26)
-sessionRepositoryTest.add(session27)
-sessionRepositoryTest.add(session28)
-sessionRepositoryTest.add(session29)
-sessionRepositoryTest.add(session31)
-sessionRepositoryTest.add(session32)
-sessionRepositoryTest.add(session33)
-sessionRepositoryTest.add(session34)
-sessionRepositoryTest.add(session36)
-sessionRepositoryTest.add(session37)
-sessionRepositoryTest.add(session38)
-sessionRepositoryTest.add(session39)
-sessionRepositoryTest.add(session41)
-sessionRepositoryTest.add(session42)
-sessionRepositoryTest.add(session43)
-sessionRepositoryTest.add(session44)
-sessionRepositoryTest.add(session46)
-sessionRepositoryTest.add(session47)
-sessionRepositoryTest.add(session48)
-sessionRepositoryTest.add(session49)
+predictions = neigh.predict(X)
 
-X = sessionRepositoryTest.getAllVectors()'''
+timer.stop()
+print("Time for predicting: " + timer.getElapsedSecondsString())
 
-#sessionRepositoryTest = SessionRepository()
-#sessionRepositoryTest = fileManager.readSessionFile('yoochoose-clicks-ax.dat', sessionRepositoryTest)
-#X = sessionRepositoryTest.getAllVectors()
-
-#predictions = neigh.predict(X)
-#print(predictions)
+print("Predictions:")
+print("------------")
+print(predictions)

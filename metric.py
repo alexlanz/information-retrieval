@@ -1,4 +1,4 @@
-from fileManager import FileManager
+from parser import Parser
 
 class Metric:
     
@@ -12,7 +12,7 @@ class Metric:
         self.SL = SL
         self.S = S
         self.Sb = S.getAllBuyingSessions()
-        self.fileManager = FileManager()
+        self.fileManager = Parser()
         
     def calculateScore(self):
         score = 0

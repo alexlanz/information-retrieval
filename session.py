@@ -2,7 +2,7 @@ class Session:
 
     id = None
     date = None
-    duration = 0               # Integer in seconds
+    duration = 0
     numberOfClicks = 0
     viewedItems = {}
     buy = False
@@ -19,31 +19,46 @@ class Session:
         self.viewedItems = viewedItems
         self.buy = buy
 
-    def getVector(self, items):
-        basicVector = [self.duration, self.numberOfClicks, len(self.viewedItems)]
-        return basicVector.extend(self.getWeightedItemVector(items))
-    
-    def getWeightedItemVector(self, items):
-        arr = [0] * items.getCountOfItems();
-        print(self.viewedItems)
-        for itemId, trending in self.viewedItems.items():
-            pos = items.getPositionOfItem(itemId)
-            arr[pos] = items.getCountOfViewsForItemWithin7Days(itemId, self.date)
-            if(trending):
-                arr[pos] = arr[pos] + self.trendingWeightedValue
-            if arr[pos] > self.buyingThreashold:
-                self.predictedPurchases.append(itemId)
-        return arr
+
+    def getId(self):
+        return self.id
+
 
     def isBuyingEvent(self):
         return self.buy
+
+
+    def getVector(self, itemRepository):
+        vector = [self.duration, self.numberOfClicks, len(self.viewedItems)]
+
+        vector.extend(self.getWeightedItemVector(itemRepository))
+
+        return vector
+
     
-    def getId(self):
-        return self.id
-    
+    def getWeightedItemVector(self, itemRepository):
+        vector = [0] * itemRepository.getCountOfItems()
+
+        for item, trending in self.viewedItems.items():
+            pos = itemRepository.getPositionOfItem(item)
+
+            if pos is None:
+                continue
+
+            vector[pos] = itemRepository.getCountOfViewsForItemWithin7Days(item, self.date)
+
+            if(trending):
+                vector[pos] = vector[pos] + self.trendingWeightedValue
+
+            if vector[pos] > self.buyingThreashold:
+                self.predictedPurchases.append(item)
+
+        return vector
+
+
     def setViewedItems(self, viewedItems):
         self.viewedItems = viewedItems
-        
+
+
     def getPredictedBoughtItems(self):
         return set(self.predictedPurchases)
-    
