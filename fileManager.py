@@ -73,6 +73,7 @@ class SessionManager:
         self.startTime = data[1]
         self.endTime = self.startTime
 
+        self.items = {}
         self.items[int(data[2])] = self.isSpecial(data[2])
 
 
@@ -93,6 +94,8 @@ class SessionManager:
     def isSpecial(self, category):
         if category.strip() == "S":
             return True
+        else:
+            return False
 
     def getElapsedTime(self):
         pattern = "%Y-%m-%dT%H:%M:%S.%fZ"

@@ -20,10 +20,11 @@ class Session:
         self.buy = buy
 
     def getVector(self, items):
-        return [self.duration, self.numberOfClicks, self.numberOfItems] + self.getWeightedItemVector(items)
+        return [self.duration, self.numberOfClicks, len(self.viewedItems)] + self.getWeightedItemVector(items)
     
     def getWeightedItemVector(self, items):
         arr = [0] * items.getCountOfItems();
+        print(self.viewedItems)
         for itemId, trending in self.viewedItems:
             pos = items.getPositionOfItem(itemId)
             arr[pos] = items.getCountOfViewsForItemWithin7Days(itemId, self.date)
