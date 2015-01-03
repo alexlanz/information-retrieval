@@ -18,9 +18,9 @@ class FileManager:
         with open(self.directory + filename, 'r', encoding='utf-8') as f:
             for line in f:
                 data = line.split(',')
-                if(sessionManager == None):
+                if sessionManager is None:
                     sessionManager = SessionManager(data)
-                elif(sessionManager.id != int(data[0])):
+                elif sessionManager.id != int(data[0]):
                     repository.add(sessionManager.getSession())
                     sessionManager = SessionManager(data)
                 else:
@@ -32,13 +32,13 @@ class FileManager:
 
 
 
-    def readBuyFile(self, filename, repository, itemViews):
+    def readBuyFile(self, filename, repository, items):
         with open(self.directory + filename, 'r', encoding='utf-8') as f:
             for line in f:
                 data = line.split(',')
-                itemViews.addItem(datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ"), int(data[0]))
+                items.addItem(int(data[0]), datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ"))
                 session = repository.getById(int(data[0]))
-                if(session != None):
+                if session is not None:
                     session.buy = True
                     repository.update(session)
 
@@ -50,7 +50,6 @@ class SessionManager:
 
     id = 0
     numberOfClicks = 0
-    special = False
     buy = False
 
     startTime = None
@@ -65,30 +64,26 @@ class SessionManager:
         self.startTime = data[1]
         self.endTime = self.startTime
 
-        self.items[int(data[2])] = [data[2]]
-        self.updateSpecial(data[3])
+        self.items[int(data[2])] = self.isSpecial(data[2])
 
 
     def updateSession(self, data):
         self.numberOfClicks += 1
         self.updateEndTime(data[1])
-        self.updateItems(data[2])
-        self.updateSpecial(data[3])
+        self.updateItems(int(data[2]), data[3])
 
 
-    def updateItems(self, item):
-        if(item not in self.items):
-            self.items.append(item)
+    def updateItems(self, itemId, special):
+        if self.items.get(itemId) is None:
+            self.items[itemId] = self.isSpecial(special)
 
 
     def updateEndTime(self, timestamp):
         self.endTime = timestamp
 
-    def isSpecial(self, ca):
-
-    def updateSpecial(self, category):
+    def isSpecial(self, category):
         if category.strip() == "S":
-            self.special = True
+            return True
 
     def getElapsedTime(self):
         pattern = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -98,12 +93,4 @@ class SessionManager:
 
 
     def getSession(self):
-        return Session(self.id, self.getElapsedTime(), self.numberOfClicks, len(self.items), self.special, self.buy)
-
-
-
-
-
-
-
-
+        return Session(self.id, self.getElapsedTime(), self.numberOfClicks, self.items, self.buy)
