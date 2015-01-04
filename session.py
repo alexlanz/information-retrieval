@@ -31,3 +31,7 @@ class Session:
     def addBuyEvent(self, item):
         self.buy = True
         self.items[item].buy = True
+
+
+    def updateItem(self, item):
+        self.items[item.id] = item

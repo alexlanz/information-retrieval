@@ -30,13 +30,17 @@ for session in testSessions.getAllSessions():
 
     for itemId, item in session.getItems().items():
         item.score = scoreBroker.calculateScore(item, session)
-        print(item.score)
-        if item.score > 300000000:
+        if item.score > 100000000:
             item.buy = True
+            session.buy = True
+            session.updateItem(item)
 
     testSessions.update(session)
 
 print(str(len(testSessions.getAllBuyingSessions())))
+
+for session in testSessions.getAllBuyingSessions():
+    print(session.id)
 
 
 solutionParser = Parser('data')
@@ -49,3 +53,6 @@ print("S O L U T I O N ---------------------------------")
 print()
 
 print(str(len(solutionSessions.getAllBuyingSessions())))
+
+for session in solutionSessions.getAllBuyingSessions():
+    print(session.id)
