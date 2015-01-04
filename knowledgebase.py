@@ -24,25 +24,29 @@ class KnowledgeBase:
 
 
     def getCountOfBuysForItemWithinDays(self, item, days, endDay):
-        startDay = endDay - timedelta(days=days)
 
         numberOfBuys = 0
 
-        for day in self.checkouts[item]:
-            if startDay <= day <= endDay:
-                numberOfBuys += 1
+        if item in self.checkouts:
+            startDay = endDay - timedelta(days=days)
+
+            for day in self.checkouts[item]:
+                if startDay <= day <= endDay:
+                    numberOfBuys += 1
 
         return numberOfBuys
 
 
     def getCountOfCategoryBuys(self, category, days, endDay):
-        startDay = endDay - timedelta(days=days)
 
         numberOfBuys = 0
 
-        for day in self.categories[category]:
-            if startDay <= day <= endDay:
-                numberOfBuys += 1
+        if category in self.categories:
+            startDay = endDay - timedelta(days=days)
+
+            for day in self.categories[category]:
+                if startDay <= day <= endDay:
+                    numberOfBuys += 1
 
         return numberOfBuys
 

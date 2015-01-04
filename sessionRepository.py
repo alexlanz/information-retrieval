@@ -37,7 +37,7 @@ class SessionRepository:
         vector = []
 
         for id, session in self.sessions.items():
-            vector.append((1 if session.isBuyingEvent() else 0))
+            vector.append((1 if session.buy else 0))
 
         return vector
     
@@ -45,7 +45,7 @@ class SessionRepository:
     def getAllBuyingSessions(self):
         buyingSessions = []     
         for session in self.sessions.values():
-            if session.isBuyingEvent():
+            if session.buy:
                 buyingSessions.append(session)
         return buyingSessions
     
