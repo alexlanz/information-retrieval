@@ -52,3 +52,8 @@ class SessionRepository:
     
     def getNumberOfSessions(self):
         return len(self.sessions.keys())
+
+
+    def addBuyEvent(self, session, item):
+        if session in self.sessions:
+            self.sessions[session].addBuyEvent(item)

@@ -1,60 +1,52 @@
 from session import Session
 from sessionRepository import SessionRepository
-from itemRepository import ItemRepository
+from knowledgebase import KnowledgeBase
 from datetime import datetime
+from item import Item
 
 class Parser:
 
     directory = ""
+    knowledgeBase = None
     sessionRepository = None
-    itemRepository = None
 
     def __init__(self, directory):
         if not directory.endswith('/'):
             directory += "/"
 
         self.directory = directory
+        self.knowledgeBase = KnowledgeBase()
         self.sessionRepository = SessionRepository()
-        self.itemRepository = ItemRepository()
-
-
-    def getSessionRepository(self):
-        return self.sessionRepository
-
-
-    def getItemRepository(self):
-        return self.itemRepository
 
 
     def readSessionFile(self, filename):
         currentSession = None
 
         with open(self.directory + filename, 'r', encoding='utf-8') as f:
+
             for line in f:
 
                 data = line.split(',')
 
                 id = int(data[0])
-                time = datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ")
+                day = datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ")
                 item = int(data[2])
-                special = True if (data[3]).strip() == "S" else False
+                category = data[3].strip()
 
-                # ItemRepository
-                if self.itemRepository is not None:
-                    self.itemRepository.addItem(item)
+                self.knowledgeBase.addSessionEvent(item, category)
 
-                # SessionRepository
                 if currentSession is None:
-                    currentSession = SessionCreator(id, time, item, special)
+                    currentSession = SessionCreator(id, item, day, category)
 
                 elif currentSession.id != id:
                     self.sessionRepository.add(currentSession.getSession())
-                    currentSession = SessionCreator(id, time, item, special)
+                    currentSession = SessionCreator(id, item, day, category)
 
                 else:
-                    currentSession.updateSession(time, item, special)
+                    currentSession.updateItems(item, category)
 
             self.sessionRepository.add(currentSession.getSession())
+
 
 
     def readBuyFile(self, filename):
@@ -66,16 +58,13 @@ class Parser:
                 time = datetime.strptime(data[1], "%Y-%m-%dT%H:%M:%S.%fZ")
                 item = int(data[2])
 
-                self.itemRepository.addBuyingEvent(item, time.date())
-                session = self.sessionRepository.getById(id)
-
-                if session is not None:
-                    session.buy = True
-                    self.sessionRepository.update(session)
+                self.sessionRepository.addBuyEvent(id, item)
+                if id in self.sessionRepository.sessions:
+                    self.knowledgeBase.addBuyEvent(item, time, self.sessionRepository.getById(id).getItems()[item].category)
 
 
     def getBoughtItemList(self, sessionId):
-        boughtItems = []
+
         with open(self.directory + 'yoochoose-buys.dat', 'r', encoding='utf-8') as f:
             for line in f:
                 data = line.split(',')
@@ -84,47 +73,34 @@ class Parser:
         return boughtItems
 
 
+    def getSessionRepository(self):
+        return self.sessionRepository
+
+
+    def getKnowledgeBase(self):
+        return self.knowledgeBase
+
+
 
 class SessionCreator:
 
     id = 0
-    numberOfClicks = 0
-    buy = False
-
-    startTime = None
-    endTime = None
+    day = None
     items = {}
 
-    def __init__(self, id, time, item, special):
+    def __init__(self, id, item, day, category):
         self.id = id
-        self.numberOfClicks = 1
-        self.duration = 0
-
-        self.startTime = time
-        self.endTime = time
-
+        self.day = day
         self.items = {}
-        self.updateItems(item, special)
+        self.updateItems(item, category)
 
 
-    def updateSession(self, time, item, special):
-        self.numberOfClicks += 1
-        self.updateEndTime(time)
-        self.updateItems(item, special)
-
-
-    def updateItems(self, item, special):
+    def updateItems(self, item, category):
         if self.items.get(item) is None:
-            self.items[item] = special
+            self.items[item] = Item(item, category, 0, False, 0)
 
-
-    def updateEndTime(self, time):
-        self.endTime = time
-
-
-    def getElapsedTime(self):
-        return (self.endTime - self.startTime).total_seconds()
+        self.items[item].incrementViews()
 
 
     def getSession(self):
-        return Session(self.id, self.startTime.date(), self.getElapsedTime(), self.numberOfClicks, self.items, self.buy)
+        return Session(self.id, self.day, self.items)

@@ -15,13 +15,29 @@ timer.start()
 
 parser = Parser('data')
 parser.readSessionFile('yoochoose-clicks-aa.dat')
+parser.readBuyFile('yoochoose-buys.dat')
 #parser.readSessionFile('yoochoose-clicks-ab.dat')
 #parser.readSessionFile('yoochoose-clicks-ac.dat')
 #parser.readSessionFile('yoochoose-clicks-ad.dat')
 #parser.readSessionFile('yoochoose-clicks-ae.dat')
 #parser.readSessionFile('yoochoose-clicks-af.dat')
 
-sessionRepository = parser.readBuyFile('yoochoose-buys.dat')
+sessionRepository = parser.getSessionRepository()
+knowledgeBase = parser.getKnowledgeBase()
+
+for session in sessionRepository.getAllSessions():
+    print()
+    for itemId, item in session.getItems().items():
+        if item.buy:
+            print("Session: " + str(session.getId()))
+            print("Item " + str(item.id) + ", views " + str(item.views) + ", category: " + item.category + ", bought: " + str(item.buy)
+                  + ", score: " + str(knowledgeBase.getCountOfBuysForItemWithinDays(item.id, 7, session.day))
+                + ", category score: " + str(knowledgeBase.getCountOfCategoryBuys(item.category, 7, session.day))
+            )
+    print()
+
+
+'''sessionRepository = parser.readBuyFile('yoochoose-buys.dat')
 
 sessionRepository = parser.getSessionRepository()
 itemRepository = parser.getItemRepository()
@@ -70,4 +86,4 @@ print("Time for predicting: " + timer.getElapsedSecondsString())
 
 print("Predictions:")
 print("------------")
-print(predictions)
+print(predictions)'''
