@@ -20,6 +20,15 @@ class Session:
         return self.items
 
 
+    def getBoughtItems(self):
+        boughtItems = []
+        for itemId, item in self.items.items():
+            if item.buy:
+                boughtItems.append(itemId)
+
+        return boughtItems
+
+
     def setItems(self, items):
         self.items = items
 

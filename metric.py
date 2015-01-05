@@ -26,7 +26,7 @@ class Metric:
         
         for s in self.SL:
             if self.sessionContainedInBuyingEvents(s.getId()):
-                As = s.getPredictedBoughtItems()
+                As = s.getBoughtItems()
                 Bs = self.getActualBoughtItems(s.getId())
                 score = score + scoreValue + (len(As.intersection(Bs)) / len(As.union(Bs)))
             else:
@@ -49,7 +49,7 @@ class Metric:
         allRelevantInstances = 0
         for s in self.SL:
             if self.sessionContainedInBuyingEvents(s.getId(), self.Sb):
-                As = s.getPredictedBoughtItems()
+                As = s.getBoughtItems()
                 Bs = self.getActualBoughtItems(s.getId())
                 relevantInstances = relevantInstances + len(As.intersection(Bs))
                 allRelevantInstances = allRelevantInstances + len(Bs)
@@ -60,7 +60,7 @@ class Metric:
         foundInstances = 0
         for s in self.SL:
             if self.sessionContainedInBuyingEvents(s.getId(), self.Sb):
-                As = s.getPredictedBoughtItems()
+                As = s.getBoughtItems()
                 Bs = self.getActualBoughtItems(s.getId())
                 relevantInstances = relevantInstances + len(As.intersection(Bs))
                 foundInstances = foundInstances + len(As)

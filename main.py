@@ -1,6 +1,7 @@
 from parser import Parser
 from utils import Timer
 from scoreBroker import ScoreBroker
+from metric import Metric
 
 timer = Timer()
 
@@ -56,3 +57,14 @@ print(str(len(solutionSessions.getAllBuyingSessions())))
 
 for session in solutionSessions.getAllBuyingSessions():
     print(session.id)
+
+
+print()
+print("M E T R I C ---------------------------------")
+print()
+
+metric = Metric(solutionSessions, testSessions)
+
+print("Score: " + metric.calculateScore())
+print("Recall: " + metric.getRecallScore())
+print("Precision: " + metric.getPrecisionScore())
